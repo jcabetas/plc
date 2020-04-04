@@ -1,0 +1,6 @@
+INPUTTEST niv1 5 10
+INPUTTEST niv2 8 15
+AND andNiv1Niv2 niv1 niv2
+TIMER outTimer andNiv1Niv2 5
+OR conjunto outTimer niv1
+PROGRAMADOR riego

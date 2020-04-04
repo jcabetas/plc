@@ -1,0 +1,5 @@
+*.o
+plc
+.project
+.cproject
+.settings/*
