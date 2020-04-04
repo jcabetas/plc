@@ -17,11 +17,13 @@ class nombres {
 };
 
 class estados {
-  private:
+//  private:
+
+  public:
     static uint8_t  estado[MAXSTATES];
     static uint16_t idNom[MAXSTATES];
     static uint8_t  definidoOut[MAXSTATES];
-  public:
+
     uint8_t &operator [](uint16_t);
     static uint16_t numEstados;
     static void init(void);

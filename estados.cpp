@@ -9,6 +9,9 @@
 /*
  * estados
  */
+
+estados est;
+
 void estados::init(void)
 {
     numEstados = 0;
@@ -17,7 +20,7 @@ void estados::init(void)
 
 uint8_t &estados::operator [](uint16_t idx)
 {
-    return estado[idx];
+    return estado[idx-1];
 }
 /*
 class estados {
@@ -54,37 +57,47 @@ uint8_t estados::addEstado(char *nombre, uint8_t esOut)
        }
        return id;
     }
-    numEstados++;
     estado[numEstados] = 0;
-    idNom[numEstados] = nombres::incorpora(nombre);
+    id = nombres::incorpora(nombre);
+    uint16_t numEs = numEstados;
+    idNom[numEstados] = id;
     definidoOut[numEstados] = esOut;
+    numEstados++;
     return numEstados;
 }
 
-
+// indice 1..numEstados
 uint8_t estados::diEstado(uint16_t numEstado)
 {
-    if (numEstado==0 || numEstado>=MAXSTATES)
+    if (numEstado==0 || numEstado>estados::numEstados)
         return 0;
-    return estado[numEstado]; 
+    return estado[numEstado-1];
 }
 
-
+// indice 1..numEstados
 void estados::ponEstado(uint16_t numEstado, uint8_t valor)
 {
-    if (numEstado==0 || numEstado>=MAXSTATES)
+    if (numEstado>estados::numEstados)
         return;
-    estado[numEstado] =  valor;
+    estado[numEstado-1] =  valor;
 }
 
-void printCabecera(void)
+void estados::printCabecera(void)
 {
-    
+    printf("  t (ds)");
+    for (uint16_t est=0;est<estados::numEstados;est++)
+    {
+        uint16_t id = estados::idNom[est];
+        printf(" %10s",nombres::nomConId(id));
+    }
+    printf("\n");
 }
 
 void estados::print(uint16_t ds)
 {
-    for (uint16_t est=1;est<numEstados;est++)
-        printf("%d (%s)\n",est,nombres::nomConId(idNom[est]));
+    printf("%8d",ds);
+    for (uint16_t est=1;est<estados::numEstados+1;est++)
+        printf(" %10d",diEstado(est));
+    printf("\n");
 }
 

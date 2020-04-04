@@ -9,7 +9,7 @@
 bloque *logicHistory[5];
 uint16_t numBloques = 0;
 programador *programadores[3];
-estados est;
+
 
 bloque::bloque()
 {
@@ -52,7 +52,7 @@ void simula(bloque **logicas, uint8_t numBlq, uint16_t dsFin)
   printf("En simula\n");
   for (uint8_t i=0;i<numBlq;i++)
      logicas[i]->init();
-//  estados::printCabecera();
+  estados::printCabecera();
   for (uint16_t ds=1;ds<=dsFin;ds++)
   {
      actualizaBloques(logicas, numBlq);

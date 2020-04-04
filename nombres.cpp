@@ -31,6 +31,7 @@ static char nombStore[STORESIZE];
 static uint16_t nombStart[MAXNOMBRES];
 static uint16_t numNombres = 0;
 
+// devuelve posicion 1..numNombres, o 0 si no puede
 uint16_t nombres::incorpora(const char *nombre_p)
 {
     uint16_t posIniGrabacion;
@@ -41,7 +42,9 @@ uint16_t nombres::incorpora(const char *nombre_p)
     // hay que crearlo... cabe?
     if (numNombres>0)
     {
-        uint16_t sitioUsado = nombStart[nombStart[numNombres]] + strlen(&nombStore[nombStart[numNombres]]) + 1;
+        uint16_t sitioUsado = nombStart[numNombres-1];
+        uint16_t longNom = strlen(&nombStore[nombStart[numNombres-1]]) + 1;
+        sitioUsado += longNom;
         if (sitioUsado+strlen(nombre_p)+1>=STORESIZE)
             return 0;
         posIniGrabacion = sitioUsado;
@@ -53,23 +56,25 @@ uint16_t nombres::incorpora(const char *nombre_p)
         posIniGrabacion = 0;
     }
     // a grabar!
-    nombStart[++numNombres] = posIniGrabacion;
+    nombStart[numNombres] = posIniGrabacion;
     strcpy(&nombStore[nombStart[numNombres]],nombre_p);
+    numNombres++;
     return numNombres;
 };
 
 
+// devuelve posicion 1..numNombres, o 0 si no puede
 uint16_t nombres::busca(const char *nombre_p)
 {
     for (uint16_t posNomb=0;posNomb<numNombres;posNomb++)
         if (!strcmp(&nombStore[nombStart[posNomb]],nombre_p))
-            return posNomb;
+            return posNomb+1;
     return 0;
 };
 
 const char *nombres::nomConId(uint16_t id)
 {
-    if (id>numNombres)
-        return "Error: id demasiado elevado";
-    return &nombStore[nombStart[id]];
+    if (id==0 || id>numNombres)
+        return "Error: id erroneo";
+    return &nombStore[nombStart[id-1]];
 };
