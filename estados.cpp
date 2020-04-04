@@ -11,6 +11,7 @@
  */
 
 estados est;
+uint8_t hayCambios;
 
 void estados::init(void)
 {
@@ -79,23 +80,31 @@ void estados::ponEstado(uint16_t numEstado, uint8_t valor)
 {
     if (numEstado>estados::numEstados)
         return;
+    if (estado[numEstado-1] !=  valor)
+        hayCambios = 1;
     estado[numEstado-1] =  valor;
 }
 
+const char *estados::nombre(uint16_t numEstado)
+{
+    return nombres::nomConId(idNom[numEstado-1]);
+};
+
 void estados::printCabecera(void)
 {
-    printf("  t (ds)");
+    printf("          ");
     for (uint16_t est=0;est<estados::numEstados;est++)
     {
         uint16_t id = estados::idNom[est];
-        printf(" %10s",nombres::nomConId(id));
+        printf(" %10s",estados::nombre(est));
     }
     printf("\n");
 }
 
-void estados::print(uint16_t ds)
+//         estados::print(ds,hora,min,seg,ds);
+void estados::print(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
-    printf("%8d",ds);
+    printf("%2d:%02d %2d.%d",hora,min,seg,ds);
     for (uint16_t est=1;est<estados::numEstados+1;est++)
         printf(" %10d",diEstado(est));
     printf("\n");

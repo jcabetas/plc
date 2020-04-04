@@ -57,7 +57,7 @@ int8_t OR::calcula(void) // devuelve 1 si ha cambiado
     return (est[numOut]!=estadoOld);
 }
 
-int8_t OR::addTime(uint16_t ms)
+int8_t OR::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     (void) ms;
     return 0;
@@ -65,10 +65,10 @@ int8_t OR::addTime(uint16_t ms)
 
 void OR::print(void)
 {
-    printf("[%s-%d] = OR ",nombres::nomConId(numOut),numOut);
+    printf("[%s-%d] = OR ",estados::nombre(numOut),numOut);
     for (uint8_t i=0;i<4;i++)
         if (numInputs[i]>0)
-            printf(" [%s-%d]",nombres::nomConId(numInputs[i]),numInputs[i]);
+            printf(" [%s-%d]",estados::nombre(numInputs[i]),numInputs[i]);
     printf("\n");
 }
 

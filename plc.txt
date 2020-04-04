@@ -1,6 +1,8 @@
-INPUTTEST niv1 5 10
-INPUTTEST niv2 8 15
+INPUTTEST niv1 8 0 0 0   8 0 1 0
+INPUTTEST niv2 8 0 0 5   8 0 1 5
 AND andN1-2 niv1 niv2
 TIMER outTimer andN1-2 5
 OR conjunto outTimer niv1
 PROGRAMADOR riego
+ZONA riego Arizonicas 30 5
+START riego manyanas 0 255 8 0

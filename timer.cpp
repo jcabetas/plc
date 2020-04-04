@@ -57,7 +57,7 @@ int8_t timer::calcula(void) // devuelve 1 si ha cambiado
     return 0;
 }
 
-int8_t timer::addTime(uint16_t ms)
+int8_t timer::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     if (est[numOut])
     {
@@ -78,6 +78,6 @@ int8_t timer::addTime(uint16_t ms)
 
 void timer::print(void)
 {
-    printf("[%s-%d] = TIMER [%s-%d] T:%d ds\n",nombres::nomConId(numOut),numOut,
-           nombres::nomConId(numInput), numInput, tiempoDs);
+    printf("[%s-%d] = TIMER [%s-%d] T:%d ds\n",estados::nombre(numOut),numOut,
+           estados::nombre(numInput), numInput, tiempoDs);
 }

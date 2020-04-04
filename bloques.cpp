@@ -6,9 +6,9 @@
 #include "bloques.h"
 
 
-bloque *logicHistory[5];
+bloque *logicHistory[20];
 uint16_t numBloques = 0;
-programador *programadores[3];
+extern uint8_t hayCambios;
 
 
 bloque::bloque()
@@ -49,6 +49,8 @@ int8_t actualizaBloques(bloque **logicas, uint8_t numBlq)
 void simula(bloque **logicas, uint8_t numBlq, uint16_t dsFin)
 {
   int8_t numIter;
+  uint8_t hora=8, min=0, seg=0, dseg=0;
+  hayCambios = 1;
   printf("En simula\n");
   for (uint8_t i=0;i<numBlq;i++)
      logicas[i]->init();
@@ -56,12 +58,33 @@ void simula(bloque **logicas, uint8_t numBlq, uint16_t dsFin)
   for (uint16_t ds=1;ds<=dsFin;ds++)
   {
      actualizaBloques(logicas, numBlq);
+     if (++ds>=10)
+     {
+         ds = 0;
+         if (++seg>=60)
+         {
+             seg = 0;
+             if (++min>=60)
+             {
+                 min = 0;
+                 if (++hora>23)
+                 {
+                     hora = 0;
+                     return;
+                 }
+             }
+         }
+     }
      // calculo hasta que no haya cambios
      for (uint8_t i=0;i<numBlq;i++)
-       logicas[i]->addTime(100);
+         //ddTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+       logicas[i]->addTime(100, hora, min, seg, ds);
      numIter = actualizaBloques(logicas, numBlq);
-     //printState(ds,numIter);
-     estados::print(ds);
+     if (hayCambios)
+     {
+         estados::print(hora,min,seg,ds);
+         hayCambios = 0;
+     }
   }
 }
 
@@ -88,13 +111,19 @@ int main(void)
         logicas[numBlq++] = new OR(numPar, par);
      if (numPar==4 && !strcmp("TIMER",par[0]))
         logicas[numBlq++] = new timer(numPar, par);
-     if (numPar==4 && !strcmp("INPUTTEST",par[0]))
+     if (numPar==10 && !strcmp("INPUTTEST",par[0]))
         logicas[numBlq++] = new inputTest(numPar, par);
+     if (numPar==2 && !strcmp("PROGRAMADOR",par[0]))
+        logicas[numBlq++] = new programador(numPar, par);
+     if (numPar==5 && !strcmp("ZONA",par[0]))
+        logicas[numBlq++] = new zona(numPar, par);
+     if (numPar==7 && !strcmp("START",par[0]))
+        logicas[numBlq++] = new start(numPar, par);
   }
   fclose(fich);
   printf("Terminado de leer\n");
   for (uint8_t i=0;i<numBlq;i++)
      logicas[i]->print();
-  simula(logicas, numBlq, 20);
+  simula(logicas, numBlq, 2000);
 }
 

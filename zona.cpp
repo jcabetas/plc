@@ -23,6 +23,8 @@
  */
 
 extern estados est;
+extern programador *programadores[NUMPROGRAMADORES];
+
 
 /*
  * Zona nombProgramador nombOut minutosA minutosB
@@ -35,10 +37,18 @@ zona::zona(uint8_t numPar, char *pars[])
         return; // error
     }
     numOut = estados::addEstado(pars[2],1);
-    minutosA = atoi(pars[3]);
-    minutosB = atoi(pars[4]);
     if (numOut==0)
         return;
+    minutosA = atoi(pars[3]);
+    minutosB = atoi(pars[4]);
+    for (uint8_t numProg=0;numProg<programador::numProgramadores;numProg++)
+    {
+        if (!strcmp(programadores[numProg]->diNombre(),pars[1]))
+        {
+            program = programadores[numProg];
+            program->asignaZona(this);
+        }
+    }
 };
 
 const char *zona::diTipo(void)
@@ -61,12 +71,12 @@ int8_t zona::calcula(void) // devuelve 1 si ha cambiado
     return 0;
 }
 
-int8_t zona::addTime(uint16_t ms)
+int8_t zona::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     return 0;
 }
 
 void zona::print(void)
 {
-    printf("[%s-%d] = ZONA\n",nombres::nomConId(numOut),numOut);
+    printf("[%s-%d] = ZONA (%s, %d min A, %d min B)\n",estados::nombre(numOut),numOut,program->diNombre(),minutosA, minutosB);
 }
