@@ -46,16 +46,16 @@ int8_t OR::init(void)
     return 0;
 }
 
-void OR::calcula(void) // devuelve 1 si ha cambiado
+void OR::calcula(void)
 {
     uint8_t estat = 0;
     for (uint16_t i=0;i<4;i++)
         if (numInputs[i]>0)
-            estat |= estados::diEstado(numInputs[i]);//est[numInputs[i]];
+            estat |= estados::diEstado(numInputs[i]);
     estados::ponEstado(numOut, estat);
 }
 
-void OR::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void OR::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
 }
 

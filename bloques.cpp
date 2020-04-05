@@ -131,6 +131,12 @@ int main(void)
         logicas[numBlq++] = new zona(numPar, par);
      if (numPar==7 && !strcmp("START",par[0]))
         logicas[numBlq++] = new start(numPar, par);
+     if (numPar==4 && !strcmp("FLIPFLOP",par[0]))
+        logicas[numBlq++] = new flipflop(numPar, par);
+     if (numPar==4 && !strcmp("DELAYON",par[0]))
+        logicas[numBlq++] = new delayon(numPar, par);
+     if (numPar==3 && !strcmp("NOT",par[0]))
+        logicas[numBlq++] = new NOT(numPar, par);
   }
   fclose(fich);
   printf("Terminado de leer\n");

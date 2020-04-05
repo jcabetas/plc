@@ -63,6 +63,7 @@ const char *zona::diNombre(void)
 
 int8_t zona::init(void)
 {
+    estados::ponEstado(numOut, 0);
     return 0;
 }
 
@@ -84,7 +85,7 @@ void zona::ponSalida(uint8_t estado)
     estados::ponEstado(numOut, estado);
 }
 
-void zona::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void zona::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
 
 }

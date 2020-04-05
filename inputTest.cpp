@@ -77,7 +77,7 @@ void inputTest::calcula(void)
 {
 }
 
-void inputTest::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void inputTest::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     uint32_t dsStart = horaIni*36000 + minIni*600 + segIni*10 + dsIni;
     uint32_t dsFinal = horaFin*36000 + minFin*600 + segFin*10 + dsFin;

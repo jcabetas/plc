@@ -114,14 +114,14 @@ void programador::calcula(void) // devuelve 1 si ha cambiado
 {
 }
 
-void programador::addTime(uint16_t incDs, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void programador::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     if (estado==0) // toca actualizar temporizador?
         return;
     if (numSuspendeConteo>0 && estados::diEstado(numSuspendeConteo)==1) // no esta paralizado el conteo?
         return;
-    if (incDs<=dsQueFaltan)
-        dsQueFaltan -= incDs;
+    if (dsInc <= dsQueFaltan)
+        dsQueFaltan -= dsInc;
     else
         dsQueFaltan = 0;
     if (dsQueFaltan==0) // hemos alcanzado el contador, pasa a siguiente zona

@@ -38,12 +38,12 @@ const char *timer::diNombre(void)
 
 int8_t timer::init(void)
 {
-    est[numOut] = 0;
+    estados::ponEstado(numOut, 0);
     cuentaDs = 0;
     return 0;
 }
 
-void timer::calcula(void) // devuelve 1 si ha cambiado
+void timer::calcula(void)
 {
     if (!estados::diEstado(numOut)) // no esta activo?
     {
@@ -54,15 +54,15 @@ void timer::calcula(void) // devuelve 1 si ha cambiado
     }
 }
 
-void timer::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void timer::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
-    if (est[numOut])
+    if (estados::diEstado(numOut))
     {
         if (estados::diEstado(numInput))
         	cuentaDs = 0;
         else
         {
-			cuentaDs += ms/100;
+			cuentaDs += dsInc;
 			if (cuentaDs>=tiempoDs)
 	            estados::ponEstado(numOut, 0);
         }

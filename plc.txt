@@ -4,6 +4,9 @@ INPUTTEST suspRiego 8 3 7 0   8 3 7 5
 AND andN1-2 niv1 niv2
 TIMER outTimer andN1-2 5
 OR conjunto outTimer niv1
+NOT notNiv1 niv1
+FLIPFLOP outFF  niv1 niv2
+DELAYON delay niv2 4
 
 # bombas
 PROGRAMADOR riego bombaOn suspRiego

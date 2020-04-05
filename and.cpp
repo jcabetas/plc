@@ -5,11 +5,6 @@
 #include "unistd.h"
 #include "string.h"
 
-//int16_t registraNombre(const char *nombre, uint8_t esOut);
-//void divideString(char *buff,uint8_t *numPar, char *par[]);
-//const char *nombState(uint16_t st);
-
-//extern int8_t state[MAXSTATES];
 
 extern estados est;
 
@@ -46,7 +41,7 @@ int8_t add::init(void)
     return 0;
 }
 
-void add::calcula(void) // devuelve 1 si ha cambiado
+void add::calcula(void)
 {
     uint8_t estat = 1;
     for (uint16_t i=0;i<4;i++)
@@ -55,7 +50,7 @@ void add::calcula(void) // devuelve 1 si ha cambiado
     estados::ponEstado(numOut, estat);
 }
 
-void add::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void add::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
 }
 

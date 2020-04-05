@@ -77,7 +77,7 @@ void start::calcula(void)
 
 }
 
-void start::addTime(uint16_t msP, uint8_t horaP, uint8_t minP, uint8_t segP, uint8_t dsP)
+void start::addTime(uint16_t dsInc, uint8_t horaP, uint8_t minP, uint8_t segP, uint8_t dsP)
 {
     if (hora==horaP && min==minP && segP==0 && dsP==0)
         program->arranca(esB);
