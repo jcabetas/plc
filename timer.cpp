@@ -43,37 +43,30 @@ int8_t timer::init(void)
     return 0;
 }
 
-int8_t timer::calcula(void) // devuelve 1 si ha cambiado
+void timer::calcula(void) // devuelve 1 si ha cambiado
 {
-    uint8_t estadoOld = est[numOut];
-    if (!est[numOut]) // no esta activo?
+    if (!estados::diEstado(numOut)) // no esta activo?
     {
-        if (est[numInput])
-        {
-            est[numOut] = 1;
-            return 1;
-        }
+        if (estados::diEstado(numInput))
+            estados::ponEstado(numOut, 1);
+        else
+            estados::ponEstado(numOut, 0);
     }
-    return 0;
 }
 
-int8_t timer::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void timer::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     if (est[numOut])
     {
-        if (est[numInput])
+        if (estados::diEstado(numInput))
         	cuentaDs = 0;
         else
         {
 			cuentaDs += ms/100;
 			if (cuentaDs>=tiempoDs)
-			{
-				est[numOut] = 0;
-				return 1;
-			}
+	            estados::ponEstado(numOut, 0);
         }
     }
-    return 0;
 }
 
 void timer::print(void)

@@ -34,30 +34,48 @@ void divideString(char *buff,uint8_t *numPar, char *par[])
 
 int8_t actualizaBloques(bloque **logicas, uint8_t numBlq)
 {
-   int8_t hayCambios, numIter;
+   int8_t numIter, hayCambiosEnCalculo;
    numIter = 0;
+   hayCambiosEnCalculo = 0;
    do
      {
         hayCambios = 0;
         for (uint8_t i=0;i<numBlq;i++)
-            hayCambios |= logicas[i]->calcula();
-     } while (hayCambios || ++numIter>10);
+            logicas[i]->calcula();
+        if (hayCambios)
+            hayCambiosEnCalculo = 1;
+     } while (hayCambios || ++numIter<10);
+   hayCambios = hayCambiosEnCalculo;
    return numIter;
 }
 
 
-void simula(bloque **logicas, uint8_t numBlq, uint16_t dsFin)
+void simula(bloque **logicas, uint8_t numBlq)
 {
-  int8_t numIter;
-  uint8_t hora=8, min=0, seg=0, dseg=0;
+  int8_t numIter, hayCambiosTime;
+  uint8_t hora=8, min=0, seg=0, ds=0;
   hayCambios = 1;
   printf("En simula\n");
   for (uint8_t i=0;i<numBlq;i++)
      logicas[i]->init();
   estados::printCabecera();
-  for (uint16_t ds=1;ds<=dsFin;ds++)
+  do
   {
      actualizaBloques(logicas, numBlq);
+     hayCambiosTime = 0;
+     // calculo hasta que no haya cambios
+     hayCambios =0;
+     for (uint8_t i=0;i<numBlq;i++)
+         //ddTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+       logicas[i]->addTime(1, hora, min, seg, ds);
+     if (hayCambios)
+         hayCambiosTime = 1;
+     numIter = actualizaBloques(logicas, numBlq);
+     if (hayCambiosTime || hayCambios)
+     {
+         estados::print(hora,min,seg,ds);
+         hayCambios = 0;
+     }
      if (++ds>=10)
      {
          ds = 0;
@@ -75,17 +93,7 @@ void simula(bloque **logicas, uint8_t numBlq, uint16_t dsFin)
              }
          }
      }
-     // calculo hasta que no haya cambios
-     for (uint8_t i=0;i<numBlq;i++)
-         //ddTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
-       logicas[i]->addTime(100, hora, min, seg, ds);
-     numIter = actualizaBloques(logicas, numBlq);
-     if (hayCambios)
-     {
-         estados::print(hora,min,seg,ds);
-         hayCambios = 0;
-     }
-  }
+  } while (hora<9);
 }
 
 int main(void)
@@ -104,7 +112,11 @@ int main(void)
   uint8_t numBlq = 0;
   while (fgets(buffer, sizeof(buffer),fich)!=NULL)
   {
+      if (buffer[0]=='#')
+          continue;
      divideString(buffer,&numPar,par);
+     if (numPar==0)
+         continue;
      if (numPar>=4 && !strcmp("AND",par[0]))
         logicas[numBlq++] = new add(numPar, par);
      if (numPar>=4 && !strcmp("OR",par[0]))
@@ -113,7 +125,7 @@ int main(void)
         logicas[numBlq++] = new timer(numPar, par);
      if (numPar==10 && !strcmp("INPUTTEST",par[0]))
         logicas[numBlq++] = new inputTest(numPar, par);
-     if (numPar==2 && !strcmp("PROGRAMADOR",par[0]))
+     if ((numPar==3 || numPar==4) && !strcmp("PROGRAMADOR",par[0]))
         logicas[numBlq++] = new programador(numPar, par);
      if (numPar==5 && !strcmp("ZONA",par[0]))
         logicas[numBlq++] = new zona(numPar, par);
@@ -124,6 +136,6 @@ int main(void)
   printf("Terminado de leer\n");
   for (uint8_t i=0;i<numBlq;i++)
      logicas[i]->print();
-  simula(logicas, numBlq, 2000);
+  simula(logicas, numBlq);
 }
 

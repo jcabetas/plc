@@ -11,7 +11,7 @@ class start: public bloque {
     protected:
         programador *program;
         uint16_t numInput;
-        uint8_t AoB;
+        uint8_t esB;
         uint8_t DOW;
         uint8_t hora;
         uint8_t min;
@@ -43,7 +43,7 @@ start::start(uint8_t numPar, char *pars[])
     numNombre = nombres::incorpora(pars[2]);
     if (numNombre==0)
         return;
-    arrancaA = atoi(pars[3]);
+    esB = atoi(pars[3]);
     DOW = atoi(pars[4]);
     hora = atoi(pars[5]);
     min = atoi(pars[6]);
@@ -72,17 +72,18 @@ int8_t start::init(void)
     return 0;
 }
 
-int8_t start::calcula(void) // devuelve 1 si ha cambiado
+void start::calcula(void)
 {
-    return 0;
+
 }
 
-int8_t start::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void start::addTime(uint16_t msP, uint8_t horaP, uint8_t minP, uint8_t segP, uint8_t dsP)
 {
-    return 0;
+    if (hora==horaP && min==minP && segP==0 && dsP==0)
+        program->arranca(esB);
 }
 
 void start::print(void)
 {
-    printf("START (%s, %s, ArrancaA:%d, %d:%d)\n",program->diNombre(), nombres::nomConId(numNombre), arrancaA, hora, min);
+    printf("START (%s, %s, ArrancaA:%d, %d:%d)\n",program->diNombre(), nombres::nomConId(numNombre), esB, hora, min);
 }

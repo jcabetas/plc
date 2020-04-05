@@ -66,14 +66,27 @@ int8_t zona::init(void)
     return 0;
 }
 
-int8_t zona::calcula(void) // devuelve 1 si ha cambiado
+void zona::calcula(void)
 {
-    return 0;
+
 }
 
-int8_t zona::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+uint8_t zona::diTiempo(uint8_t esB)
 {
-    return 0;
+    if (!esB)
+        return minutosA;
+    else
+        return minutosB;
+}
+
+void zona::ponSalida(uint8_t estado)
+{
+    estados::ponEstado(numOut, estado);
+}
+
+void zona::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+{
+
 }
 
 void zona::print(void)

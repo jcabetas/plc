@@ -46,21 +46,17 @@ int8_t add::init(void)
     return 0;
 }
 
-int8_t add::calcula(void) // devuelve 1 si ha cambiado
+void add::calcula(void) // devuelve 1 si ha cambiado
 {
-    uint8_t estadoOld = est[numOut];
     uint8_t estat = 1;
     for (uint16_t i=0;i<4;i++)
         if (numInputs[i]>0)
-            estat &= est[numInputs[i]];
-    est[numOut] = estat;
-    return (est[numOut]!=estadoOld);
+            estat &= estados::diEstado(numInputs[i]);//est[numInputs[i]];
+    estados::ponEstado(numOut, estat);
 }
 
-int8_t add::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void add::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
-    (void) ms;
-    return 0;
 }
 
 void add::print(void)

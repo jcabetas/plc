@@ -1,8 +1,12 @@
-INPUTTEST niv1 8 0 0 0   8 0 1 0
-INPUTTEST niv2 8 0 0 5   8 0 1 5
+INPUTTEST niv1 8 0 0 2   8 0 1 0
+INPUTTEST niv2 8 0 0 5   8 0 2 5
+INPUTTEST suspRiego 8 3 7 0   8 3 7 5
 AND andN1-2 niv1 niv2
 TIMER outTimer andN1-2 5
 OR conjunto outTimer niv1
-PROGRAMADOR riego
-ZONA riego Arizonicas 30 5
-START riego manyanas 0 255 8 0
+
+# bombas
+PROGRAMADOR riego bombaOn suspRiego
+ZONA riego Arizonicas 2 5
+ZONA riego Columpios 1 0
+START riego manyanas 0 255 8 3

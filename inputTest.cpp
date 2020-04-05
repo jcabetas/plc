@@ -73,18 +73,19 @@ int8_t inputTest::init(void)
     return 0;
 }
 
-int8_t inputTest::calcula(void)
+void inputTest::calcula(void)
 {
-    return 0;
 }
 
-int8_t inputTest::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void inputTest::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
-    if (hora>=horaIni && hora<=horaFin && min>=minIni && min<=minFin && seg>=segIni && seg<=segFin && ds>=dsIni && ds<=dsFin)
+    uint32_t dsStart = horaIni*36000 + minIni*600 + segIni*10 + dsIni;
+    uint32_t dsFinal = horaFin*36000 + minFin*600 + segFin*10 + dsFin;
+    uint32_t dsAhora = hora*36000 + min*600 + seg*10 + ds;
+    if (dsAhora>=dsStart && dsAhora<=dsFinal)
         estados::ponEstado(numOut, 1);
     else
         estados::ponEstado(numOut, 0);
-    return 0;
 }
 
 void inputTest::print(void)

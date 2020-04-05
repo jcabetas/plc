@@ -41,9 +41,9 @@ class bloque {
   public:
 	bloque();
     virtual int8_t init(void) = 0;
-    virtual int8_t calcula(void) = 0;
+    virtual void calcula(void) = 0;
     virtual void   print(void) = 0;
-    virtual int8_t addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds) = 0;
+    virtual void addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds) = 0;
     virtual const char *diTipo(void) = 0;
     virtual const char *diNombre(void) = 0;
 };
@@ -57,9 +57,9 @@ class add: public bloque {
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
-        int8_t calcula(void);
+        void calcula(void);
         void   print(void);
-        int8_t addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+        void addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
 };
 
 
@@ -75,9 +75,9 @@ class timer: public bloque {
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
-        int8_t calcula(void);
+        void calcula(void);
         void   print(void);
-        int8_t addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+        void addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
 };
 
 class OR: public bloque {
@@ -89,9 +89,9 @@ class OR: public bloque {
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
-        int8_t calcula(void);
+        void calcula(void);
         void   print(void);
-        int8_t addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+        void addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
 };
 
 
@@ -106,9 +106,9 @@ class inputTest: public bloque {
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
-        int8_t calcula(void);
+        void calcula(void);
         void   print(void);
-        int8_t addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+        void addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
 };
 
 
@@ -125,9 +125,11 @@ class zona: public bloque {
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
-        int8_t calcula(void);
-        void   print(void);
-        int8_t addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+        void calcula(void);
+        uint8_t diTiempo(uint8_t esB);
+        void ponSalida(uint8_t estado);
+        void print(void);
+        void addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
 };
 
 
@@ -135,7 +137,7 @@ class start: public bloque {
     protected:
         programador *program;
         uint16_t numNombre;
-        uint8_t arrancaA;
+        uint8_t esB;
         uint8_t DOW;
         uint8_t hora;
         uint8_t min;
@@ -144,9 +146,9 @@ class start: public bloque {
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
-        int8_t calcula(void);
+        void calcula(void);
         void   print(void);
-        int8_t addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+        void addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
 };
 
 
@@ -155,7 +157,10 @@ class programador: public bloque {
         zona *zonas[MAXZONAS];
         start *starts[MAXSTARTS];
         uint8_t estado; // 0 o zonaActiva
-        uint16_t segundosQueFaltan;
+        uint8_t cicloArrancado;
+        uint16_t numOutBomba;
+        uint16_t numSuspendeConteo;
+        uint16_t dsQueFaltan;
         uint16_t numNombre;
     public:
         programador(uint8_t numPar, char *pars[]);  // lee desde string
@@ -166,10 +171,11 @@ class programador: public bloque {
         void asignaStart(start *strt);
         const char *diTipo(void);
         const char *diNombre(void);
+        void arranca(uint8_t esB);
         int8_t init(void);
-        int8_t calcula(void);
+        void calcula(void);
         void   print(void);
-        int8_t addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+        void addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
 };
 
 

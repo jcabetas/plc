@@ -19,9 +19,11 @@ void estados::init(void)
 };
 
 
-uint8_t &estados::operator [](uint16_t idx)
+uint8_t &estados::operator [](uint16_t numEstado)
 {
-    return estado[idx-1];
+    if (numEstado==0 || numEstado>estados::numEstados)
+        printf("Numero estado ilegal en []\n");
+    return estado[numEstado-1];
 }
 /*
 class estados {
@@ -71,15 +73,21 @@ uint8_t estados::addEstado(char *nombre, uint8_t esOut)
 uint8_t estados::diEstado(uint16_t numEstado)
 {
     if (numEstado==0 || numEstado>estados::numEstados)
+    {
+        printf("Numero de estado ilegal en diEstado\n");
         return 0;
+    }
     return estado[numEstado-1];
 }
 
 // indice 1..numEstados
 void estados::ponEstado(uint16_t numEstado, uint8_t valor)
 {
-    if (numEstado>estados::numEstados)
+    if (numEstado==0 || numEstado>estados::numEstados)
+    {
+        printf("Numero estado ilegal en ponEstado\n");
         return;
+    }
     if (estado[numEstado-1] !=  valor)
         hayCambios = 1;
     estado[numEstado-1] =  valor;
@@ -87,13 +95,18 @@ void estados::ponEstado(uint16_t numEstado, uint8_t valor)
 
 const char *estados::nombre(uint16_t numEstado)
 {
+    if (numEstado==0 || numEstado>estados::numEstados)
+    {
+        printf("Numero estado ilegal en nombre\n");
+        return "Estado ilegal";
+    }
     return nombres::nomConId(idNom[numEstado-1]);
 };
 
 void estados::printCabecera(void)
 {
     printf("          ");
-    for (uint16_t est=0;est<estados::numEstados;est++)
+    for (uint16_t est=1;est<=estados::numEstados;est++)
     {
         uint16_t id = estados::idNom[est];
         printf(" %10s",estados::nombre(est));
@@ -105,7 +118,7 @@ void estados::printCabecera(void)
 void estados::print(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     printf("%2d:%02d %2d.%d",hora,min,seg,ds);
-    for (uint16_t est=1;est<estados::numEstados+1;est++)
+    for (uint16_t est=1;est<=estados::numEstados;est++)
         printf(" %10d",diEstado(est));
     printf("\n");
 }

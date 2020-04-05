@@ -12,10 +12,13 @@ class programador: public bloque {
         zona *zonas[16];
         start *starts[3];
         uint8_t estado; // 0 o zonaActiva
-        uint16_t segundosQueFaltan;
+        uint16_t dsQueFaltan;
         uint16_t numNombre;
         uint8_t numZonas;
         uint8_t numStarts;
+        uint8_t cicloArrancado;
+        uint16_t numSuspendeConteo;
+        uint16_t numOutBomba;
         static uint8_t numProgramadores;
     public:
         programador(uint8_t numPar, char *pars[]);  // lee desde string
@@ -34,11 +37,11 @@ programador *programadores[NUMPROGRAMADORES];
 uint8_t programador::numProgramadores=0;
 
 /*
- * PROGRAMADOR riego
+ * PROGRAMADOR riego outBomba [numOutBomba
  */
 programador::programador(uint8_t numPar, char *pars[])
 {
-    if (numPar!=2)
+    if (numPar!=3 && numPar!=4)
     {
         printf("#parametros incorrecto\n");
         return; // error
@@ -52,6 +55,11 @@ programador::programador(uint8_t numPar, char *pars[])
         return;
     }
     programadores[numProgramadores++] = this;
+    numOutBomba = estados::addEstado(pars[2],1);
+    if (numPar==4)
+        numSuspendeConteo = estados::addEstado(pars[3],0);
+    else
+        numSuspendeConteo = 0;
     numZonas = 0;
     numStarts = 0;
 };
@@ -69,8 +77,21 @@ const char *programador::diNombre(void)
 int8_t programador::init(void)
 {
     estado = 0;
-    segundosQueFaltan = 0;
+    dsQueFaltan = 0;
     return 0;
+}
+
+
+void programador::arranca(uint8_t esB)
+{
+    if (numZonas==0)
+        return;
+    estado = 1;
+    cicloArrancado = esB;
+    dsQueFaltan = 600*zonas[0]->diTiempo(esB);
+    zonas[0]->ponSalida(1);
+    estados::ponEstado(numOutBomba, 1);
+    return;
 }
 
 void programador::asignaZona(zona *zon)
@@ -89,17 +110,48 @@ void programador::asignaStart(start *strt)
     numStarts++;
 }
 
-int8_t programador::calcula(void) // devuelve 1 si ha cambiado
+void programador::calcula(void) // devuelve 1 si ha cambiado
 {
-    return 0;
 }
 
-int8_t programador::addTime(uint16_t ms, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
+void programador::addTime(uint16_t incDs, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
-    return 0;
+    if (estado==0) // toca actualizar temporizador?
+        return;
+    if (numSuspendeConteo>0 && estados::diEstado(numSuspendeConteo)==1) // no esta paralizado el conteo?
+        return;
+    if (incDs<=dsQueFaltan)
+        dsQueFaltan -= incDs;
+    else
+        dsQueFaltan = 0;
+    if (dsQueFaltan==0) // hemos alcanzado el contador, pasa a siguiente zona
+    {
+        zonas[estado-1]->ponSalida(0); // desactiva zona en marcha
+        if (estado>=numZonas) // hemos cubierto todas las zonas
+        {
+            estado = 0;
+            estados::ponEstado(numOutBomba, 0);
+            return;
+        }
+        while (++estado<=numZonas) // busca zonas con tiempo>0
+        {
+            if (zonas[estado-1]->diTiempo(cicloArrancado)>0)
+            {
+                dsQueFaltan = 600*zonas[estado-1]->diTiempo(cicloArrancado);
+                zonas[estado-1]->ponSalida(1);
+                return;
+            }
+        }
+        // hemos cubierto todas las zonas
+        estado = 0;
+        estados::ponEstado(numOutBomba, 0);
+    }
 }
 
 void programador::print(void)
 {
-    printf("PROGRAMADOR %s\n",nombres::nomConId(numNombre));
+    if (numSuspendeConteo==0)
+        printf("PROGRAMADOR %s bomba:%s-%d\n",nombres::nomConId(numNombre),estados::nombre(numOutBomba),numOutBomba);
+    else
+        printf("PROGRAMADOR %s bomba:%s-%d suspendeConteo:%s-%d\n",nombres::nomConId(numNombre),estados::nombre(numOutBomba),numOutBomba,estados::nombre(numSuspendeConteo),numSuspendeConteo);
 }
