@@ -1,0 +1,51 @@
+INPUTTEST niv1 8 0 0 2   8 0 1 0
+INPUTTEST niv2 8 0 0 5   8 0 2 5
+INPUTTEST suspRiego 8 3 7 0   8 3 7 5
+AND andN1-2 niv1 niv2
+TIMER outTimer andN1-2 5 sec
+OR conjunto outTimer niv1
+NOT notNiv1 niv1
+FLIPFLOP outFF  niv1 niv2
+
+DELAYON delayAlarmaPozo niv2 [30,0,600] min
+
+# bombas
+PROGRAMADOR riego bombaOn suspRiego
+ZONA riego Arizonicas [10,0,60] [riego,0,0,60]
+ZONA riego Columpios [5,0,60] [riego,0,0,60]
+ZONA riego Chopos [riego,10,0,60] [riego,0,0,60]
+
+#Start nombProgramador nombStart AoB DOW hora min
+START riego manyanas [0] [01010100] [8] [3]
+
+# las VAR siempre van a memoria PLC
+VAR En_casa general onoff off
+VAR ponRiego general onoffauto off
+
+
+#===========================================
+
+MODBUS 9600
+
+# DEVMODBUS nombre, address
+DEVMODBUS inversor 1
+DEVMODBUS relesModBus 2
+
+#  device canal nombreVar tipoVar in/out
+INPUTMODBUS inversor 15 frecuencia 2Bx0.1 in
+INPUTMODBUS inversor 19 presion 2Bx0.1 in
+INPUTMODBUS relesModBus 5 boyaAlta 1B in
+INPUTMODBUS relesModBus 6 boyaBaja 1B in
+
+#===========================================
+
+# estadoBomba(inp) petAgua hayComunic
+RADIO petBomba petAgua hayComunic
+
+#===========================================
+
+#   telefMaestro
+SMS 619262851 
+# siempre se puede pedir por variables ajustables, tanto para leer como ajustar 
+
+ 
