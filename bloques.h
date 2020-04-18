@@ -24,6 +24,7 @@ class estados {
     static uint8_t  estado[MAXSTATES];
     static uint16_t idNom[MAXSTATES];
     static uint8_t  definidoOut[MAXSTATES];
+    static uint8_t  idNom2idEstado[MAXSTATES];
   public:
     uint8_t &operator [](uint16_t);
     static uint16_t numEstados;
@@ -83,8 +84,10 @@ class timer: public bloque {
     protected:
         int16_t numOut;
         int16_t numInput;
-        uint16_t cuentaDs;
-        uint16_t tiempoDs;
+        uint16_t cuenta;
+        uint16_t tiempo;
+        uint8_t tipoCuenta;
+        uint8_t horaIni, minIni, secIni, dsIni;
     public:
         timer(uint8_t numPar, char *pars[]);  // lee desde string
         const char *diTipo(void);

@@ -1,9 +1,9 @@
 #TEST riego manyanas [0] [01010100], [8,4] [3 4, 5]
+AND andN1-2 niv1 niv2
 INPUTTEST niv1 8 0 0 2   8 0 1 0
 INPUTTEST niv2 8 0 0 5   8 0 2 5
 INPUTTEST suspRiego 8 3 7 0   8 3 7 5
-AND andN1-2 niv1 niv2
-TIMER outTimer andN1-2 5
+TIMER outTimer bombaOn 5 ho
 OR conjunto outTimer niv1
 NOT notNiv1 niv1
 FLIPFLOP outFF  niv1 niv2

@@ -28,7 +28,7 @@ extern estados est;
  */
 
 /*
- * DELAYON  output input dsegundo
+ * DELAYON  output input tiempo [unidades, dsegundo default]
  */
 delayon::delayon(uint8_t numPar, char *pars[])
 {

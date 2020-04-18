@@ -63,7 +63,7 @@ void divideString(char *buff,uint8_t *numPar, char *par[])
             *(buff++) = 0;
             while (*buff==' ') // eliminamos espacios en blanco
                 *(buff++) = 0;
-            continue;
+          continue;
         }
         // estamos en un parametro
         par[*numPar] = buff++;
@@ -163,7 +163,7 @@ void simula(bloque **logicas, uint8_t numBlq)
              }
          }
      }
-  } while (hora<9);
+  } while (hora<25);
 }
 
 int main(void)
@@ -210,7 +210,7 @@ int main(void)
         logicas[numBlq++] = new add(numPar, par);
      if (numPar>=4 && !strcmp("OR",par[0]))
         logicas[numBlq++] = new OR(numPar, par);
-     if (numPar==4 && !strcmp("TIMER",par[0]))
+     if ((numPar==4 || numPar==5) && !strcmp("TIMER",par[0]))
         logicas[numBlq++] = new timer(numPar, par);
      if (numPar==10 && !strcmp("INPUTTEST",par[0]))
         logicas[numBlq++] = new inputTest(numPar, par);
