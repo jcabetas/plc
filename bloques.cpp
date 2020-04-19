@@ -5,15 +5,17 @@
 #include "string.h"
 #include "bloques.h"
 
-bloque *logicHistory[20];
-uint16_t numBloques = 0;
+
 extern uint8_t hayCambios;
 
+bloque *bloque::logicHistory[MAXBLOQUES];
+uint16_t bloque::numBloques = 0;
 bloque::bloque()
 {
     numBloques++;
     logicHistory[numBloques] = NULL; // = (bloque *)this;
 }
+
 
 /*
  * Divide string por espacios

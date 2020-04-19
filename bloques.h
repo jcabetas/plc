@@ -2,15 +2,19 @@
 #define PLC_BLOQUES_H_
 
 #include <stdint.h>
+#include "parametros.h"
 
 #define STORESIZE   1000
 #define MAXSTATES     50
+#define MAXBLOQUES    80
 #define MAXNOMBRES    50
+#define MAXPARAMETROS 80
 #define NUMPROGRAMADORES 3
 #define MAXZONAS      16
 #define MAXSTARTS      3
 
 
+void divideBloque(char *buff, uint8_t *numPar, char *par[]);
 
 class nombres {
   public:
@@ -39,6 +43,9 @@ class estados {
 
 
 class bloque {
+    private:
+        static uint16_t numBloques;
+        static bloque *logicHistory[MAXBLOQUES];
   public:
 	bloque();
     virtual int8_t init(void) = 0;
@@ -85,7 +92,7 @@ class timer: public bloque {
         int16_t numOut;
         int16_t numInput;
         uint16_t cuenta;
-        uint16_t tiempo;
+        parametroU16 *tiempo;
         uint8_t tipoCuenta;
         uint8_t horaIni, minIni, secIni, dsIni;
     public:
