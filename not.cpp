@@ -26,17 +26,18 @@ extern estados est;
 /*
  * NOT  output input
  */
-NOT::NOT(uint8_t numPar, char *pars[])
+NOT::NOT(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
     if (numPar<3)
     {
         printf("#parametros incorrecto\n");
+        *hayError = 1;
         return;
     }
-    numOut = estados::addEstado(pars[1],1);
+    numOut = estados::addEstado(pars[1], 1, hayError);
     if (numOut==0)
         return;
-    numInput = estados::addEstado(pars[2],0);
+    numInput = estados::addEstado(pars[2], 0, hayError);
 };
 
 const char *NOT::diTipo(void)

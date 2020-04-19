@@ -46,7 +46,7 @@ uint8_t estados::idNom2idEstado[MAXSTATES] = {0};   // el id del estado para un 
 *  para poner un nuevo estado
 *  si existe, verificar que no hay dos que sean output 
 */
-uint8_t estados::addEstado(char *nombre, uint8_t esOut)
+uint8_t estados::addEstado(char *nombre, uint8_t esOut, uint8_t *hayError)
 {
     uint16_t idNombre;
     idNombre = nombres::busca(nombre);
@@ -59,7 +59,8 @@ uint8_t estados::addEstado(char *nombre, uint8_t esOut)
             if (definidoOut[idEstado-1])
             {
                 printf("Error: salida %s (estado:%d) se define varias veces\n", nombre,idEstado);
-                return idEstado-1;
+                *hayError = 1;
+                return 0;
             }
             definidoOut[idEstado-1] = 1;
         }

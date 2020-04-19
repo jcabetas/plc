@@ -33,11 +33,12 @@ extern programador *programadores[NUMPROGRAMADORES];
 /*
  * Start nombProgramador nombStart AoB DOW hora min
  */
-start::start(uint8_t numPar, char *pars[])
+start::start(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
     if (numPar!=7)
     {
         printf("#parametros incorrecto\n");
+        *hayError = 1;
         return; // error
     }
     numNombre = nombres::incorpora(pars[2]);

@@ -39,11 +39,12 @@ uint8_t programador::numProgramadores=0;
 /*
  * PROGRAMADOR riego outBomba [numOutBomba
  */
-programador::programador(uint8_t numPar, char *pars[])
+programador::programador(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
     if (numPar!=3 && numPar!=4)
     {
         printf("#parametros incorrecto\n");
+        *hayError = 1;
         return; // error
     }
     numNombre = nombres::incorpora(pars[1]);
@@ -55,9 +56,9 @@ programador::programador(uint8_t numPar, char *pars[])
         return;
     }
     programadores[numProgramadores++] = this;
-    numOutBomba = estados::addEstado(pars[2],1);
+    numOutBomba = estados::addEstado(pars[2],1,hayError);
     if (numPar==4)
-        numSuspendeConteo = estados::addEstado(pars[3],0);
+        numSuspendeConteo = estados::addEstado(pars[3],0, hayError);
     else
         numSuspendeConteo = 0;
     numZonas = 0;

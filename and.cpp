@@ -11,18 +11,19 @@ extern estados est;
 /*
  * AND  incoherenciaTB  BoyaTope  noBoyaBaja
  */
-add::add(uint8_t numPar, char *pars[])
+add::add(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
     if (numPar<4 || numPar>5)
     {
         printf("#parametros incorrecto\n");
+        *hayError = 1;
         return; // error
     }
-    numOut = estados::addEstado(pars[1],1);
+    numOut = estados::addEstado(pars[1],1, hayError);
     if (numOut==0)
         return;
     for (uint8_t i=2;i<numPar;i++)
-        numInputs[i-2] = estados::addEstado(pars[i],0);
+        numInputs[i-2] = estados::addEstado(pars[i],0, hayError);
 };
 
 const char *add::diTipo(void)

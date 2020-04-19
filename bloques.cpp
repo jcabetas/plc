@@ -164,7 +164,7 @@ void simula(bloque **logicas, uint8_t numBlq)
 int main(void)
 {
     estados::init();
-    uint8_t numPar, numParTest;
+    uint8_t numPar, numParTest, hayError;
     char *par[15], *parTest[15];
     char buffer[120];
     bloque *logicas[20];
@@ -176,6 +176,7 @@ int main(void)
         return (-1);
     }
     uint8_t numBlq = 0;
+    hayError = 0;
     while (fgets(buffer, sizeof(buffer), fich) != NULL)
     {
         if (buffer[0] == '#')
@@ -203,33 +204,38 @@ int main(void)
         }
         uint16_t numBlqOld = numBlq;
         if (numPar >= 4 && !strcmp("AND", par[0]))
-            logicas[numBlq++] = new add(numPar, par);
+            logicas[numBlq++] = new add(numPar, par, &hayError);
         if (numPar >= 4 && !strcmp("OR", par[0]))
-            logicas[numBlq++] = new OR(numPar, par);
+            logicas[numBlq++] = new OR(numPar, par, &hayError);
         if ((numPar == 4 || numPar == 5) && !strcmp("TIMER", par[0]))
-            logicas[numBlq++] = new timer(numPar, par);
+            logicas[numBlq++] = new timer(numPar, par, &hayError);
         if ((numPar == 4 || numPar == 5) && !strcmp("TIMERNOREDISP", par[0]))
-            logicas[numBlq++] = new timerNoRedisp(numPar, par);
+            logicas[numBlq++] = new timerNoRedisp(numPar, par, &hayError);
         if (numPar == 10 && !strcmp("INPUTTEST", par[0]))
-            logicas[numBlq++] = new inputTest(numPar, par);
+            logicas[numBlq++] = new inputTest(numPar, par, &hayError);
         if ((numPar == 3 || numPar == 4) && !strcmp("PROGRAMADOR", par[0]))
-            logicas[numBlq++] = new programador(numPar, par);
+            logicas[numBlq++] = new programador(numPar, par, &hayError);
         if (numPar == 5 && !strcmp("ZONA", par[0]))
-            logicas[numBlq++] = new zona(numPar, par);
+            logicas[numBlq++] = new zona(numPar, par, &hayError);
         if (numPar == 7 && !strcmp("START", par[0]))
-            logicas[numBlq++] = new start(numPar, par);
+            logicas[numBlq++] = new start(numPar, par, &hayError);
         if (numPar == 4 && !strcmp("FLIPFLOP", par[0]))
-            logicas[numBlq++] = new flipflop(numPar, par);
+            logicas[numBlq++] = new flipflop(numPar, par, &hayError);
         if ((numPar == 4 || numPar == 5) && !strcmp("DELAYON", par[0]))
-            logicas[numBlq++] = new delayon(numPar, par);
+            logicas[numBlq++] = new delayon(numPar, par, &hayError);
         if (numPar == 3 && !strcmp("NOT", par[0]))
-            logicas[numBlq++] = new NOT(numPar, par);
+            logicas[numBlq++] = new NOT(numPar, par, &hayError);
         // imprime el bloque procesado
         if (numBlqOld != numBlq)
             logicas[numBlqOld]->print();
     }
     fclose(fich);
     printf("Terminado de leer\n");
+    if (hayError)
+    {
+        printf("** Abortado por errores\n");
+        return 1;
+    }
     //  for (uint8_t i=0;i<numBlq;i++)
     //     logicas[i]->print();
     simula(logicas, numBlq);

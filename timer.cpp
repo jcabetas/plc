@@ -70,17 +70,18 @@ const char *descTipDuracion(uint8_t tipDura)
     }
 }
 
-timer::timer(uint8_t numPar, char *pars[])
+timer::timer(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
     if (numPar < 4 || numPar > 5)
     {
         printf("#parametros incorrecto\n");
+        *hayError = 1;
         return; // error
     }
-    numOut = estados::addEstado(pars[1], 1);
+    numOut = estados::addEstado(pars[1], 1, hayError);
     if (numOut == 0)
         return;
-    numInput = estados::addEstado(pars[2], 0);
+    numInput = estados::addEstado(pars[2], 0, hayError);
     tiempo = atoi(pars[3]);
     if (numPar == 5)
         tipoCuenta = tipDuracion(pars[4]);

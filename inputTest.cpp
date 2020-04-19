@@ -35,14 +35,15 @@
  */
 
 
-inputTest::inputTest(uint8_t numPar, char *pars[])
+inputTest::inputTest(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
     if (numPar != 10)
     {
         printf("#parametros incorrecto\n");
+        *hayError = 1;
         return; // error
     }
-    numOut = estados::addEstado(pars[1],1);
+    numOut = estados::addEstado(pars[1], 1, hayError);
     if (numOut==0)
         return;
     horaIni = atoi(pars[2]);

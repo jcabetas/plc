@@ -29,14 +29,15 @@ extern programador *programadores[NUMPROGRAMADORES];
 /*
  * Zona nombProgramador nombOut minutosA minutosB
  */
-zona::zona(uint8_t numPar, char *pars[])
+zona::zona(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
     if (numPar!=5)
     {
         printf("#parametros incorrecto\n");
+        *hayError = 1;
         return; // error
     }
-    numOut = estados::addEstado(pars[2],1);
+    numOut = estados::addEstado(pars[2],1,hayError);
     if (numOut==0)
         return;
     minutosA = atoi(pars[3]);

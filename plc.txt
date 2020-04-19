@@ -6,7 +6,7 @@ INPUTTEST suspRiego 8 3 7 0   8 3 7 5
 TIMER outTimer bombaOn 5 ho
 TIMERNOREDISP outTimerNR bombaOn 5 ho
 OR conjunto outTimer niv1
-NOT notNiv1 niv1
+NOT bombaOn niv1
 FLIPFLOP outFF  niv1 niv2
 DELAYON delay outTimer 4 min
 # bombas

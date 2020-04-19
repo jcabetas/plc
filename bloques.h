@@ -29,7 +29,7 @@ class estados {
     uint8_t &operator [](uint16_t);
     static uint16_t numEstados;
     static void init(void);
-    static uint8_t addEstado(char *nombre, uint8_t esOut);
+    static uint8_t addEstado(char *nombre, uint8_t esOut, uint8_t *hayError);
     static void ponEstado(uint16_t numEstado, uint8_t valor);
     static uint8_t diEstado(uint16_t numEstado);
     static void printCabecera(void);
@@ -56,7 +56,7 @@ class add: public bloque {
         uint16_t numOut;
         uint16_t numInputs[4];
     public:
-        add(uint8_t numPar, char *pars[]);  // lee desde string
+        add(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -70,7 +70,7 @@ class NOT: public bloque {
         uint16_t numOut;
         uint16_t numInput;
     public:
-        NOT(uint8_t numPar, char *pars[]);  // lee desde string
+        NOT(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -89,7 +89,7 @@ class timer: public bloque {
         uint8_t tipoCuenta;
         uint8_t horaIni, minIni, secIni, dsIni;
     public:
-        timer(uint8_t numPar, char *pars[]);  // lee desde string
+        timer(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -107,7 +107,7 @@ class timerNoRedisp: public bloque {
         uint8_t tipoCuenta;
         uint8_t horaIni, minIni, secIni, dsIni;
     public:
-        timerNoRedisp(uint8_t numPar, char *pars[]);  // lee desde string
+        timerNoRedisp(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -126,7 +126,7 @@ class delayon: public bloque {
         uint8_t tipoCuenta;
         uint8_t horaIni, minIni, secIni, dsIni;
     public:
-        delayon(uint8_t numPar, char *pars[]);  // lee desde string
+        delayon(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -140,7 +140,7 @@ class OR: public bloque {
         int16_t numOut;
         int16_t numInputs[4];
     public:
-        OR(uint8_t numPar, char *pars[]);  // lee desde string
+        OR(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -155,7 +155,7 @@ class flipflop: public bloque {
         int16_t numInputSet;
         int16_t numInputReset;
     public:
-        flipflop(uint8_t numPar, char *pars[]);  // lee desde string
+        flipflop(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -171,7 +171,7 @@ class inputTest: public bloque {
         uint8_t horaIni,minIni,segIni,dsIni;
         uint8_t horaFin,minFin,segFin,dsFin;
     public:
-        inputTest(uint8_t numPar, char *pars[]);  // lee desde string
+        inputTest(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -190,7 +190,7 @@ class zona: public bloque {
         uint8_t minutosA;
         uint8_t minutosB;
     public:
-        zona(uint8_t numPar, char *pars[]);  // lee desde string
+        zona(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -211,7 +211,7 @@ class start: public bloque {
         uint8_t hora;
         uint8_t min;
     public:
-        start(uint8_t numPar, char *pars[]);  // lee desde string
+        start(uint8_t numPar, char *pars[], uint8_t *hayError);
         const char *diTipo(void);
         const char *diNombre(void);
         int8_t init(void);
@@ -232,7 +232,7 @@ class programador: public bloque {
         uint16_t dsQueFaltan;
         uint16_t numNombre;
     public:
-        programador(uint8_t numPar, char *pars[]);  // lee desde string
+        programador(uint8_t numPar, char *pars[], uint8_t *hayError);
         static uint8_t numProgramadores;
         uint8_t numZonas;
         uint8_t numStarts;

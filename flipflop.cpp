@@ -34,18 +34,19 @@ extern estados est;
 /*
  * FLIPFLOP llenarPozo  nivelBajo(S)  nivelAlto(R)
  */
-flipflop::flipflop(uint8_t numPar, char *pars[])
+flipflop::flipflop(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
     if (numPar!=4)
     {
         printf("#parametros incorrecto\n");
+        *hayError = 1;
         return;
     }
-    numOut = estados::addEstado(pars[1],1);
+    numOut = estados::addEstado(pars[1],1, hayError);
     if (numOut==0)
         return;
-    numInputSet = estados::addEstado(pars[2],0);
-    numInputReset = estados::addEstado(pars[3],0);
+    numInputSet = estados::addEstado(pars[2],0, hayError);
+    numInputReset = estados::addEstado(pars[3],0, hayError);
 };
 
 const char *flipflop::diTipo(void)
