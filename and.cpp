@@ -41,7 +41,7 @@ int8_t add::init(void)
     return 0;
 }
 
-void add::calcula(void)
+void add::calcula(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     uint8_t estat = 1;
     for (uint16_t i=0;i<4;i++)

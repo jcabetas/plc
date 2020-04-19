@@ -8,14 +8,18 @@
 
 
 extern estados est;
+const char *descTipDuracion(uint8_t tipDura);
+uint8_t tipDuracion(char *descTipDuracion);
 
 /*
  * class delayon: public bloque {
     protected:
         int16_t numOut;
         int16_t numInput;
-        uint16_t cuentaDs;
-        uint16_t tiempoDs;
+        uint16_t cuenta;
+        uint16_t tiempo;
+        uint8_t tipoCuenta;
+        uint8_t horaIni, minIni, secIni, dsIni;
     public:
         delayon(uint8_t numPar, char *pars[]);  // lee desde string
         const char *diTipo(void);
@@ -32,7 +36,7 @@ extern estados est;
  */
 delayon::delayon(uint8_t numPar, char *pars[])
 {
-    if (numPar!=4)
+    if (numPar<4 || numPar>5)
     {
         printf("#parametros incorrecto\n");
         return; // error
@@ -41,7 +45,11 @@ delayon::delayon(uint8_t numPar, char *pars[])
     if (numOut==0)
         return;
     numInput = estados::addEstado(pars[2],0);
-    tiempoDs = atoi(pars[3]);
+    tiempo = atoi(pars[3]);
+    if (numPar==5)
+        tipoCuenta = tipDuracion(pars[4]);
+    else
+        tipoCuenta = 4; 
 };
 
 const char *delayon::diTipo(void)
@@ -57,19 +65,15 @@ const char *delayon::diNombre(void)
 int8_t delayon::init(void)
 {
     estados::ponEstado(numOut, 0);
-    cuentaDs = 0;
+    contando = 0;
+    cuenta = 0;
     return 0;
 }
 
 // mientras la entrada este activa, va aumentando cuenta. Cuando llega al valor, activa la salida
 // si baja en cualquier momento se reinicia
-void delayon::calcula(void)
+void delayon::calcula(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
-    // esta On si esta activo y la entrada esta activa
-    if (estados::diEstado(numOut) && estados::diEstado(numInput))
-        estados::ponEstado(numOut, 1);
-    else
-        estados::ponEstado(numOut, 0);
 }
 
 void delayon::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
@@ -81,21 +85,37 @@ void delayon::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, ui
     if (!estados::diEstado(numInput))
     {
         estados::ponEstado(numOut, 0);
-        cuentaDs = 0;
+        contando = 0;
+        cuenta = 0;
         return;
     }
-    else
+    // entrada activada, pero no la salida => cuento
+    // estabamos contando??
+    if (!contando)
     {
-        if (cuentaDs>=tiempoDs)
-        {
+        contando = 1;  // no estaba contando. Empiezo
+        cuenta = 0;
+        minIni = min;
+        secIni = seg;
+        dsIni = ds;
+        return;
+    }
+    // Vemos si tengo que avanzar contador
+    // si arranco a las 3:55 15,3 s
+    // si cuenta minutos tiene que avanzar cuando coincidan los seg y dseg
+    if  (tipoCuenta==4 ||  // ds
+        (tipoCuenta==3 && (dsIni==ds)) ||   // seg
+        (tipoCuenta==2 && (dsIni==ds) && (secIni==seg)) ||  // min
+        (tipoCuenta==1 && (dsIni==ds) && (secIni==seg) && minIni==min)) // hora
+    {
+        cuenta += dsInc;
+        if (cuenta>=tiempo)
             estados::ponEstado(numOut, 1);
-        }
-        cuentaDs += dsInc;
     }
 }
 
 void delayon::print(void)
 {
-    printf("[%s-%d] = DELAYON [%s-%d] T:%d ds\n",estados::nombre(numOut),numOut,
-           estados::nombre(numInput), numInput, tiempoDs);
+    printf("[%s-%d] = DELAYON [%s-%d] T:%d %s\n",estados::nombre(numOut),numOut,
+           estados::nombre(numInput), numInput, tiempo,descTipDuracion(tipoCuenta));
 }

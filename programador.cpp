@@ -110,7 +110,7 @@ void programador::asignaStart(start *strt)
     numStarts++;
 }
 
-void programador::calcula(void) // devuelve 1 si ha cambiado
+void programador::calcula(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds) // devuelve 1 si ha cambiado
 {
 }
 

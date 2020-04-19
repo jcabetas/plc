@@ -4,13 +4,13 @@ INPUTTEST niv1 8 0 0 2   8 0 1 0
 INPUTTEST niv2 8 0 0 5   8 0 2 5
 INPUTTEST suspRiego 8 3 7 0   8 3 7 5
 TIMER outTimer bombaOn 5 ho
+TIMERNOREDISP outTimerNR bombaOn 5 ho
 OR conjunto outTimer niv1
 NOT notNiv1 niv1
 FLIPFLOP outFF  niv1 niv2
-DELAYON delay niv2 4
+DELAYON delay outTimer 4 min
 # bombas
 PROGRAMADOR riego bombaOn suspRiego
 ZONA riego Arizonicas 2 5
 ZONA riego Columpios 1 0
 START riego manyanas 0 255 8 3
-

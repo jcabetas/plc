@@ -55,7 +55,7 @@ int8_t NOT::init(void)
     return 0;
 }
 
-void NOT::calcula(void)
+void NOT::calcula(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     estados::ponEstado(numOut, !estados::diEstado(numInput));
 }

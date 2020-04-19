@@ -64,7 +64,7 @@ int8_t flipflop::init(void)
     return 0;
 }
 
-void flipflop::calcula(void)
+void flipflop::calcula(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     if (estados::diEstado(numInputSet))
     {

@@ -46,7 +46,7 @@ int8_t OR::init(void)
     return 0;
 }
 
-void OR::calcula(void)
+void OR::calcula(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
     uint8_t estat = 0;
     for (uint16_t i=0;i<4;i++)

@@ -55,12 +55,14 @@ uint8_t estados::addEstado(char *nombre, uint8_t esOut)
         // ahora busca el estado que tenga el nombre con ese id
         uint16_t idEstado = idNom2idEstado[idNombre];
         if (esOut)
+        {
             if (definidoOut[idEstado-1])
             {
-                printf("Error: salida %s se define varias veces\n", nombre);
-                return 0;
+                printf("Error: salida %s (estado:%d) se define varias veces\n", nombre,idEstado);
+                return idEstado-1;
             }
-        definidoOut[idEstado-1] = 1;
+            definidoOut[idEstado-1] = 1;
+        }
         return idEstado;
     }
     estado[numEstados] = 0;
@@ -77,7 +79,7 @@ uint8_t estados::diEstado(uint16_t numEstado)
 {
     if (numEstado == 0 || numEstado > estados::numEstados)
     {
-        printf("Numero de estado ilegal en diEstado\n");
+        printf("Numero de estado ilegal %d en diEstado\n",numEstado);
         return 0;
     }
     return estado[numEstado - 1];
@@ -88,7 +90,7 @@ void estados::ponEstado(uint16_t numEstado, uint8_t valor)
 {
     if (numEstado == 0 || numEstado > estados::numEstados)
     {
-        printf("Numero estado ilegal en ponEstado\n");
+        printf("Numero estado ilegal %d en ponEstado\n",numEstado);
         return;
     }
     if (estado[numEstado - 1] != valor)
@@ -100,7 +102,7 @@ const char *estados::nombre(uint16_t numEstado)
 {
     if (numEstado == 0 || numEstado > estados::numEstados)
     {
-        printf("Numero estado ilegal en nombre\n");
+        printf("Numero estado %d ilegal en nombre\n",numEstado);
         return "Estado ilegal";
     }
     return nombres::nomConId(idNom[numEstado - 1]);

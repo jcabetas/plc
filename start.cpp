@@ -72,7 +72,7 @@ int8_t start::init(void)
     return 0;
 }
 
-void start::calcula(void)
+void start::calcula(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
 
 }

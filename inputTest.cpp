@@ -72,7 +72,7 @@ int8_t inputTest::init(void)
     return 0;
 }
 
-void inputTest::calcula(void)
+void inputTest::calcula(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
 }
 

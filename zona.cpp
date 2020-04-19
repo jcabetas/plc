@@ -67,7 +67,7 @@ int8_t zona::init(void)
     return 0;
 }
 
-void zona::calcula(void)
+void zona::calcula(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds)
 {
 
 }
