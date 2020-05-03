@@ -58,6 +58,12 @@ public:
     virtual void addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds) = 0;
     virtual const char *diTipo(void) = 0;
     virtual const char *diNombre(void) = 0;
+    static int8_t initBloques(void);
+    static void addTimeBloques(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+    static int8_t actualizaBloques(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
+    static void printBloques(void);
+    static uint8_t deleteAll(void);
+    static uint16_t numero(void);
 };
 
 class add : public bloque
