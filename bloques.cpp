@@ -16,6 +16,10 @@ bloque::bloque()
     logicHistory[numBloques] = NULL; // = (bloque *)this;
 }
 
+bloque::~bloque() 
+{ 
+    printf("Borrando bloque\n"); 
+} 
 
 /*
  * Divide string por espacios
@@ -238,7 +242,12 @@ int main(void)
         printf("** Abortado por errores\n");
         return 1;
     }
-    //  for (uint8_t i=0;i<numBlq;i++)
-    //     logicas[i]->print();
+    if (!estados::estadosInitOk())
+        _exit(1);
+
     simula(logicas, numBlq);
+
+    printf("num. bloques: %d\n",numBlq);
+    for (uint8_t i = 0; i < numBlq; i++)
+        delete logicas[i];
 }

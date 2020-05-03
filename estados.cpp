@@ -99,6 +99,20 @@ void estados::ponEstado(uint16_t numEstado, uint8_t valor)
     estado[numEstado - 1] = valor;
 }
 
+uint8_t estados::estadosInitOk(void)
+{
+    uint8_t esOk = 1;
+    for (uint16_t est = 1; est <= estados::numEstados; est++)
+    {
+        if (!estados::definidoOut[est-1])
+        {
+            printf("Error: %s (estado #%d) nadie lo define\n", estados::nombre(est),est);
+            esOk = 0;
+        }
+    }
+    return esOk;
+}
+
 const char *estados::nombre(uint16_t numEstado)
 {
     if (numEstado == 0 || numEstado > estados::numEstados)

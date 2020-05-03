@@ -26,6 +26,11 @@ add::add(uint8_t numPar, char *pars[], uint8_t *hayError)
         numInputs[i-2] = estados::addEstado(pars[i],0, hayError);
 };
 
+/* add::~add()
+{
+    printf("Deleting add\n");
+} */
+
 const char *add::diTipo(void)
 {
 	return "and";
