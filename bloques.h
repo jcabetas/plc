@@ -62,7 +62,7 @@ public:
     static void addTimeBloques(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
     static int8_t actualizaBloques(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
     static void printBloques(void);
-    static uint8_t deleteAll(void);
+    static void deleteAll(void);
     static uint16_t numero(void);
 };
 
@@ -74,7 +74,6 @@ protected:
 
 public:
     add(uint8_t numPar, char *pars[], uint8_t *hayError);
-//    ~add();
     const char *diTipo(void);
     const char *diNombre(void);
     int8_t init(void);

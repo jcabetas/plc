@@ -127,6 +127,7 @@ uint8_t leePlc(const char *nomFich)
         printf("** Abortado por errores\n");
         return 1;
     }
+    return 0;
 }
 
 int main(void)

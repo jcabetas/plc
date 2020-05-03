@@ -21,7 +21,7 @@ bloque::~bloque()
     printf("Borrando bloque\n"); 
 } 
 
-uint8_t bloque::deleteAll(void)
+void bloque::deleteAll(void)
 {
     for (int16_t blq=0;blq<bloque::numBloques;blq++)
         delete logicHistory[blq];
@@ -33,6 +33,7 @@ int8_t bloque::initBloques(void)
 {
     for (int16_t blq=0;blq<bloque::numBloques;blq++)
         logicHistory[blq]->init();
+    return 0;
 }
 
 uint16_t bloque::numero()
