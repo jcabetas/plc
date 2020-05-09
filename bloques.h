@@ -21,6 +21,7 @@ private:
     static char nombStore[STORESIZE];
     static uint16_t nombStart[MAXNOMBRES];
     static uint16_t numNombres;
+
 public:
     static void init(void);
     static uint16_t incorpora(const char *nombre_p);
@@ -35,6 +36,7 @@ private:
     static uint16_t idNom[MAXSTATES];
     static uint8_t definidoOut[MAXSTATES];
     static uint8_t idNom2idEstado[MAXSTATES];
+
 public:
     uint8_t &operator[](uint16_t);
     static uint16_t numEstados;
@@ -53,6 +55,7 @@ class bloque
 private:
     static uint16_t numBloques;
     static bloque *logicHistory[MAXBLOQUES];
+
 public:
     bloque();
     virtual ~bloque() = 0;
