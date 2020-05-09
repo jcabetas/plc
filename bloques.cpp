@@ -10,6 +10,7 @@ extern uint8_t hayCambios;
 
 bloque *bloque::logicHistory[MAXBLOQUES];
 uint16_t bloque::numBloques = 0;
+
 bloque::bloque()
 {
     logicHistory[numBloques] = this;

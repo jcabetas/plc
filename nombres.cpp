@@ -27,9 +27,14 @@
 
  */
 
-static char nombStore[STORESIZE];
-static uint16_t nombStart[MAXNOMBRES];
-static uint16_t numNombres = 0;
+char nombres::nombStore[STORESIZE];
+uint16_t nombres::nombStart[MAXNOMBRES];
+uint16_t nombres::numNombres = 0;
+
+void nombres::init(void)
+{
+    numNombres = 0;
+}
 
 // devuelve posicion 1..numNombres, o 0 si no puede
 uint16_t nombres::incorpora(const char *nombre_p)

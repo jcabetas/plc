@@ -17,7 +17,12 @@ void divideBloque(char *buff, uint8_t *numPar, char *par[]);
 
 class nombres
 {
+private:
+    static char nombStore[STORESIZE];
+    static uint16_t nombStart[MAXNOMBRES];
+    static uint16_t numNombres;
 public:
+    static void init(void);
     static uint16_t incorpora(const char *nombre_p);
     static uint16_t busca(const char *nombre_p);
     static const char *nomConId(uint16_t id);
@@ -30,7 +35,6 @@ private:
     static uint16_t idNom[MAXSTATES];
     static uint8_t definidoOut[MAXSTATES];
     static uint8_t idNom2idEstado[MAXSTATES];
-
 public:
     uint8_t &operator[](uint16_t);
     static uint16_t numEstados;
@@ -58,6 +62,7 @@ public:
     virtual void addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds) = 0;
     virtual const char *diTipo(void) = 0;
     virtual const char *diNombre(void) = 0;
+    static void vaciaBloques(void);
     static int8_t initBloques(void);
     static void addTimeBloques(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);
     static int8_t actualizaBloques(uint8_t hora, uint8_t min, uint8_t seg, uint8_t ds);

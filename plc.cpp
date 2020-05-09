@@ -67,7 +67,8 @@ uint8_t leePlc(const char *nomFich)
         perror("Error opening file");
         return (-1);
     }
-    uint8_t numBlq = 0;
+    bloque::vaciaBloques();
+    nombres::init();
     estados::init();
     hayError = 0;
     while (fgets(buffer, sizeof(buffer), fich) != NULL)
@@ -130,6 +131,11 @@ uint8_t leePlc(const char *nomFich)
     return 0;
 }
 
+
+/*
+    Ejecutar con: valgrind --leak-check=full --show-leak-kinds=all ./bloques
+    To do: hacer clases de parámetros flash
+*/
 int main(void)
 {
     leePlc("plc.txt");
