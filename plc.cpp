@@ -67,7 +67,7 @@ uint8_t leePlc(const char *nomFich)
         perror("Error opening file");
         return (-1);
     }
-    bloque::vaciaBloques();
+    bloque::deleteAll();
     nombres::init();
     estados::init();
     hayError = 0;
