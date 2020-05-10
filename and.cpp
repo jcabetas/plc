@@ -20,6 +20,8 @@ add::add(uint8_t numPar, char *pars[], uint8_t *hayError)
         return; // error
     }
     numOut = estados::addEstado(pars[1],1, hayError);
+    for (uint8_t i=0;i<4;i++)
+        numInputs[i] = 0;
     if (numOut==0)
         return;
     for (uint8_t i=2;i<numPar;i++)

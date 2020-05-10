@@ -37,7 +37,7 @@ programador *programadores[NUMPROGRAMADORES];
 uint8_t programador::numProgramadores=0;
 
 /*
- * PROGRAMADOR riego outBomba [numOutBomba
+ * PROGRAMADOR riego outBomba [numOutBomba]
  */
 programador::programador(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
