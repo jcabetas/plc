@@ -1,6 +1,7 @@
 *.o
 plc
 bloques
+bloques.exe
 .project
 .cproject
 .settings/*
