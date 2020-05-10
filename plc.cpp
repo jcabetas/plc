@@ -143,4 +143,6 @@ int main(void)
         _exit(1);
     simula();
     bloque::deleteAll();
+    parametro::printAll();
+    parametro::deleteAll();
 }

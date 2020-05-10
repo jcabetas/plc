@@ -46,7 +46,7 @@ delayon::delayon(uint8_t numPar, char *pars[], uint8_t *hayError)
     if (numOut==0)
         return;
     numInput = estados::addEstado(pars[2],0, hayError);
-    tiempo = atoi(pars[3]);
+    tiempo = parametro::addParametroU16(pars[3],hayError); //atoi(pars[3]);
     if (numPar==5)
         tipoCuenta = tipDuracion(pars[4]);
     else
@@ -110,7 +110,7 @@ void delayon::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t seg, ui
         (tipoCuenta==1 && (dsIni==ds) && (secIni==seg) && minIni==min)) // hora
     {
         cuenta += dsInc;
-        if (cuenta>=tiempo)
+        if (cuenta>=tiempo->valor())
             estados::ponEstado(numOut, 1);
     }
 }

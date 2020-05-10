@@ -10,17 +10,6 @@
 extern estados est;
 
 /*
-class timer: public bloque {
-    protected:
-        int16_t numOut;
-        int16_t numInput;
-        uint16_t cuenta;
-        uint16_t tiempo;
-        uint8_t tipoCuenta; // 1:horas, 2:minutos, 3:segundos, 4:dsegundos
-        uint8_t horaIni, minIni, secIni, dsIni; // 
-
-}
-
     TIMER  output input tiempo [tipoCuenta (ds default)]
 
     => Arranca cuando la entrada es 1
@@ -83,8 +72,7 @@ timer::timer(uint8_t numPar, char *pars[], uint8_t *hayError)
     if (numOut == 0)
         return;
     numInput = estados::addEstado(pars[2], 0, hayError);
-    tiempo = parametroU16::addParametro(pars[3],hayError);
-    //new parametroU16Valor(atoi(pars[3]));
+    tiempo = parametro::addParametroU16(pars[3],hayError);
     if (numPar == 5)
         tipoCuenta = tipDuracion(pars[4]);
     else

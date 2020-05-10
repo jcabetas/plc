@@ -132,7 +132,7 @@ protected:
     int16_t numOut;
     int16_t numInput;
     uint16_t cuenta;
-    uint16_t tiempo;
+    parametroU16 * tiempo;
     uint8_t tipoCuenta;
     uint8_t horaIni, minIni, secIni, dsIni;
 
@@ -152,7 +152,7 @@ protected:
     int16_t numOut;
     int16_t numInput;
     uint16_t cuenta;
-    uint16_t tiempo;
+    parametroU16 *tiempo;
     uint8_t contando;
     uint8_t tipoCuenta;
     uint8_t horaIni, minIni, secIni, dsIni;

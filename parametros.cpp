@@ -7,58 +7,86 @@
 #include "parametros.h"
 #include "bloques.h"
 
+uint16_t parametro::numParams = 0;
+parametro *parametro::params[MAXPARAMETROS];
 
-uint16_t parametroU16::numParamsU16 = 0;
-parametroU16 *parametroU16::parametrosU16[MAXPARAMETROS];
+uint16_t parametroFlash::numParamsFlash = 0;
+parametroFlash *parametroFlash::paramsFlash[MAXPARAMETROS];
 
-/*
-class parametroU16
+parametro::parametro()
 {
-public:
-    static parametroU16 *parametrosU16[MAXPARAMETROS];
-    static uint16_t numParamsU16;
-    parametroU16();
-    virtual uint16_t valor(void) = 0;
-};
+    params[numParams] = this;
+    numParams++;
+}
 
-class parametroU16Valor : parametroU16
+parametro::~parametro()
 {
-private:
-    uint16_t valU16;
-public:
-    parametroU16Valor(uint16_t valor);
-    uint16_t valor(void);
-};
+    printf("Borrando parametro\n");
+}
 
-class parametroU16Flash : parametroU16
+void parametro::deleteAll(void)
 {
-private:
-    uint16_t valU16;
-public:
-    parametroU16Flash(char *nombre, uint16_t valorIni, uint16_t valorMin, uint16_t valorMax);
-    uint16_t valor(void);
-};
-*/
+    for (int16_t nparam=0;nparam<parametro::numParams;nparam++)
+        delete params[nparam];
+    parametro::numParams = 0;
+}
+
+void parametro::printAll(void)
+{
+    for (int16_t nparam=0;nparam<parametro::numParams;nparam++)
+        params[nparam]->print();
+}
+
+
+
+parametroFlash::parametroFlash()
+{
+    paramsFlash[numParamsFlash] = this;
+    numParamsFlash++;
+}
 
 parametroU16Valor::parametroU16Valor(uint16_t valor)
 {
-    parametrosU16[numParamsU16] = this;
-    numParamsU16++;
     valU16 = valor;
 }
+
+parametroU16Valor::~parametroU16Valor()
+{
+    printf("Borrando parametro U16Valor: %d\n",valU16);
+}
+
 
 uint16_t parametroU16Valor::valor(void)
 {
     return valU16;
 }
 
+void parametroU16Valor::print()
+{
+    printf("Valor de U16Valor:%d\n",valU16);
+}
+
 
 
 parametroU16Flash::parametroU16Flash(char *nombre, uint16_t valorIni, uint16_t valorMin, uint16_t valorMax)
 {
-    parametrosU16[numParamsU16] = this;
-    numParamsU16++;
+    // parametrosU16[numParamsU16] = this;
+    // numParamsU16++;
     valU16 = valorIni;
+    valIni = valorIni;
+    valMin = valorMin;
+    valMax = valorMax;
+    idNombre = nombres::incorpora(nombre);
+}
+
+parametroU16Flash::~parametroU16Flash()
+{
+    printf("Borrando parametro U16Flash %s: %d\n",nombres::nomConId(idNombre),valU16);
+}
+
+void parametroU16Flash::leeDeFlash()
+{
+    // to do: leer de flash
 }
 
 uint16_t parametroU16Flash::valor(void)
@@ -66,7 +94,12 @@ uint16_t parametroU16Flash::valor(void)
     return valU16;
 }
 
-parametroU16 *parametroU16::addParametro(char *parStr, uint8_t *error)
+void parametroU16Flash::print(void)
+{
+    printf("Valor de U16Flash %s: %d\n",nombres::nomConId(idNombre),valU16);
+}
+
+parametroU16 *parametro::addParametroU16(char *parStr, uint8_t *error)
 {
     uint8_t numPar;
     char *par[10];

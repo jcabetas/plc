@@ -52,7 +52,7 @@ timerNoRedisp::timerNoRedisp(uint8_t numPar, char *pars[], uint8_t *hayError)
         return;
     }
     numInput = estados::addEstado(pars[2],0, hayError);
-    tiempo = atoi(pars[3]);
+    tiempo = parametro::addParametroU16(pars[3],hayError); //atoi(pars[3]);
     if (numPar==5)
         tipoCuenta = tipDuracion(pars[4]);
     else
@@ -99,11 +99,11 @@ void timerNoRedisp::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t s
             (tipoCuenta==2 && (dsIni==ds) && (secIni==seg)) ||  // min
             (tipoCuenta==1 && (dsIni==ds) && (secIni==seg) && minIni==min)) // hora
         {
-            if (cuenta<tiempo)
+            if (cuenta<tiempo->valor())
                 cuenta += dsInc;
         }
         // si hemos llegado al maximo, pero la entrada esta baja, desactiva
-        if (cuenta==tiempo && !estados::diEstado(numInput))
+        if (cuenta==tiempo->valor() && !estados::diEstado(numInput))
         {
             estados::ponEstado(numOut, 0);
         }
@@ -113,5 +113,5 @@ void timerNoRedisp::addTime(uint16_t dsInc, uint8_t hora, uint8_t min, uint8_t s
 void timerNoRedisp::print(void)
 {
     printf("[%s-%d] = TIMERNOREDISP [%s-%d] T:%d %s\n",estados::nombre(numOut),numOut,
-           estados::nombre(numInput), numInput, tiempo, descTipDuracion(tipoCuenta));
+           estados::nombre(numInput), numInput, tiempo->valor(), descTipDuracion(tipoCuenta));
 }
