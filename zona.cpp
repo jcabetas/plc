@@ -27,7 +27,7 @@ extern programador *programadores[NUMPROGRAMADORES];
 
 
 /*
- * Zona nombProgramador nombOut minutosA minutosB
+ * Zona nombProgramador descripcionZona minutosA minutosB
  */
 zona::zona(uint8_t numPar, char *pars[], uint8_t *hayError)
 {
@@ -37,9 +37,16 @@ zona::zona(uint8_t numPar, char *pars[], uint8_t *hayError)
         *hayError = 1;
         return; // error
     }
-    numOut = estados::addEstado(pars[2],1,hayError);
-    if (numOut==0)
+    nombOut = parametro::addParametroString(pars[2],hayError);    
+    printf("%s\n",nombOut->id());
+    char id[20];
+    strncpy(id, nombOut->id(),sizeof(id));
+    numOut = estados::addEstado(id, 1, hayError);
+    if (nombOut==NULL)
+    {
+        *hayError = 1;
         return;
+    }
     minutosA = atoi(pars[3]);
     minutosB = atoi(pars[4]);
     for (uint8_t numProg=0;numProg<programador::numProgramadores;numProg++)

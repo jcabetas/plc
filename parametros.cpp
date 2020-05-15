@@ -70,8 +70,6 @@ void parametroU16Valor::print()
 
 parametroU16Flash::parametroU16Flash(char *nombre, uint16_t valorIni, uint16_t valorMin, uint16_t valorMax)
 {
-    // parametrosU16[numParamsU16] = this;
-    // numParamsU16++;
     valU16 = valorIni;
     valIni = valorIni;
     valMin = valorMin;
@@ -116,4 +114,84 @@ parametroU16 *parametro::addParametroU16(char *parStr, uint8_t *error)
         return new parametroU16Valor(0); // valor cuando hay error
     }
     return new parametroU16Flash(par[0], atoi(par[1]),atoi(par[2]),atoi(par[3]));
+}
+
+
+
+parametroStringValor::parametroStringValor(const char *ptrStr)
+{
+    strncpy(valorStr, ptrStr,MAXLENSTR);
+}
+
+parametroStringValor::~parametroStringValor()
+{
+    printf("Borrando parametro StringValor: %s\n",valorStr);
+}
+
+
+char *parametroStringValor::valor(void)
+{
+    return valorStr;
+}
+
+const char *parametroStringValor::id(void)  // si es string fijo, el id coincide con el nombre
+{
+    return valorStr;
+}
+
+void parametroStringValor::print()
+{
+    printf("Valor de StringValor:%s\n",valorStr);
+}
+
+
+parametroStringFlash::parametroStringFlash(char *nombre, char *valorIni)
+{
+
+    strncpy(valorStr, valorIni, MAXLENSTR);
+    idNombre = nombres::incorpora(nombre);
+}
+
+parametroStringFlash::~parametroStringFlash()
+{
+    printf("Borrando parametro StringFlash %s: %s\n",nombres::nomConId(idNombre),valorStr);
+}
+
+void parametroStringFlash::leeDeFlash()
+{
+    // to do: leer de flash
+}
+
+char *parametroStringFlash::valor(void)
+{
+    return valorStr;
+}
+
+const char *parametroStringFlash::id(void)
+{
+    return nombres::nomConId(idNombre);
+}
+
+void parametroStringFlash::print(void)
+{
+    printf("Valor de StringFlash %s: %s\n",nombres::nomConId(idNombre),valorStr);
+}
+
+parametroString *parametro::addParametroString(char *parStr, uint8_t *hayError)
+{
+    uint8_t numPar;
+    char *par[10];
+
+    // si no empieza por '[' es un numero
+    if (parStr[0]!='[')
+        return new parametroStringValor(parStr); // podria verificar que son numeros
+    // es un bloque del tipo
+    // [nombreZona,Rocalla]
+    divideBloque(parStr, &numPar, par);
+    if (numPar != 2)
+    {
+        *hayError = 1;
+        return new parametroStringValor("Error en parametro"); // valor cuando hay error
+    }
+    return new parametroStringFlash(par[0], par[1]);
 }

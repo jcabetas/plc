@@ -41,7 +41,7 @@ public:
     uint8_t &operator[](uint16_t);
     static uint16_t numEstados;
     static void init(void);
-    static uint8_t addEstado(char *nombre, uint8_t esOut, uint8_t *hayError);
+    static uint8_t addEstado(const char *nombre, uint8_t esOut, uint8_t *hayError);
     static void ponEstado(uint16_t numEstado, uint8_t valor);
     static uint8_t diEstado(uint16_t numEstado);
     static uint8_t estadosInitOk(void);
@@ -224,10 +224,10 @@ class zona : public bloque
 {
 protected:
     programador *program;
-    uint16_t numOut;
+    parametroString *nombOut;
+    int16_t numOut;
     uint8_t minutosA;
     uint8_t minutosB;
-
 public:
     zona(uint8_t numPar, char *pars[], uint8_t *hayError);
     const char *diTipo(void);

@@ -46,7 +46,7 @@ uint8_t estados::idNom2idEstado[MAXSTATES] = {0};   // el id del estado para un 
 *  para poner un nuevo estado
 *  si existe, verificar que no hay dos que sean output 
 */
-uint8_t estados::addEstado(char *nombre, uint8_t esOut, uint8_t *hayError)
+uint8_t estados::addEstado(const char *nombre, uint8_t esOut, uint8_t *hayError)
 {
     uint16_t idNombre;
     idNombre = nombres::busca(nombre);
@@ -54,17 +54,23 @@ uint8_t estados::addEstado(char *nombre, uint8_t esOut, uint8_t *hayError)
     {
         // ahora busca el estado que tenga el nombre con ese id
         uint16_t idEstado = idNom2idEstado[idNombre];
-        if (esOut)
+        if (idEstado>0)
         {
-            if (definidoOut[idEstado-1])
+            if (esOut)
             {
-                printf("Error: salida %s (estado:%d) se define varias veces\n", nombre,idEstado);
-                *hayError = 1;
-                return 0;
+                if (definidoOut[idEstado-1])
+                {
+                    printf("Error: salida %s (estado:%d) se define varias veces\n", nombre,idEstado);
+                    *hayError = 1;
+                    return 0;
+                }
+                else
+                {
+                    definidoOut[idEstado-1] = esOut;
+                }
             }
-            definidoOut[idEstado-1] = 1;
+            return idEstado;
         }
-        return idEstado;
     }
     estado[numEstados] = 0;
     idNombre = nombres::incorpora(nombre);

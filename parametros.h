@@ -4,8 +4,9 @@
 #include <stdint.h>
 
 #define MAXPARAMETROS 80
+#define MAXLENSTR  150
 class parametroU16;
-
+class parametroString;
 
 /*
 
@@ -24,6 +25,7 @@ private:
 public:
     parametro();
     static parametroU16 *addParametroU16(char *parStr, uint8_t *hayError);
+    static parametroString *addParametroString(char *parStr, uint8_t *hayError);
     static void deleteAll(void);
     static void printAll(void);
     virtual ~parametro() = 0;
@@ -72,5 +74,39 @@ public:
     uint16_t valor(void);
     void print();
 };
+
+class parametroString
+{
+public:
+    virtual char *valor(void) = 0;
+    virtual const char *id(void) = 0;
+};
+
+class parametroStringValor : public parametro, public parametroString
+{
+private:
+    char valorStr[MAXLENSTR];
+public:
+    ~parametroStringValor();
+    parametroStringValor(const char *ptrStr);
+    char *valor(void);
+    const char *id(void);
+    void print();
+};
+
+class parametroStringFlash : public parametro, public parametroFlash, public parametroString
+{
+private:
+    char valorStr[MAXLENSTR];
+    uint16_t idNombre;
+public:
+    ~parametroStringFlash();
+    parametroStringFlash(char *nombre, char *valorIni);
+    void leeDeFlash();
+    char *valor(void);
+    const char *id(void);
+    void print();
+};
+
 
 #endif /* PLC_PARAMETROS_H_ */

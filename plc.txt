@@ -12,6 +12,6 @@ FLIPFLOP outFF  niv1 niv2
 DELAYON delay outTimer 4 min
 # bombas
 PROGRAMADOR riego bombaOn suspRiego
-ZONA riego Arizonicas 2 5
+ZONA riego [idArizonicas Arizonicas] 2 5
 ZONA riego Columpios 1 0
 START riego manyanas 0 255 8 3
