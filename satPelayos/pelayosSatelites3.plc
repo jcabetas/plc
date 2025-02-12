@@ -1,0 +1,139 @@
+# Datos Genéricos
+Nombre	Pelayos
+Baudios	19200
+Telefono	619262851
+Estacion485	M
+
+# OUTPUT485 hay12vdc S 1
+PlacaOut1	PLACAOUTPUTI2C	66
+
+# Conexiones en placas salida
+OUTPUTI2C	CalefInv  		PlacaOut1 0
+OUTPUTI2C	CalefEdurne  	PlacaOut1 1
+OUTPUTI2C	CalefJB  		PlacaOut1 2
+OUTPUTI2C	CalefMain  		PlacaOut1 3
+OUTPUTI2C	CalefAinhoa  	PlacaOut1 4
+
+# Calefaccion
+CalefAinhoaEE MANUALINPUTEEPROM 0 CalefAinhoa Calefaccion
+CalefMainEE MANUALINPUTEEPROM 0 CalefMain Calefaccion
+CalefJBEE 	MANUALINPUTEEPROM 0 CalefJB Calefaccion
+CalefEdurneEE MANUALINPUTEEPROM 0 CalefEdurne Calefaccion
+CalefInvEE MANUALINPUTEEPROM 0 CalefInvit Calefaccion
+
+CalefPermiso	MANUALINPUTEEPROM 0 PonCalefaccion General
+
+CalefAinhoa	AND CalefPermiso 	CalefAinhoaEE
+CalefMain   AND CalefPermiso 	CalefMainEE
+CalefJB		AND CalefPermiso 	CalefJBEE
+CalefEdurne AND CalefPermiso 	CalefEdurneEE
+CalefInv	AND CalefPermiso 	CalefInvEE
+
+
+
+# ----------------------------------------------------------
+# Riego
+
+# Programador de riego
+Riego		PROGRAMADOR
+Riego 		BLOQUEORIEGO 	pararRiego
+Riego		START	A	*    	5:00
+Riego		START	A	*    	22:00
+Riego		ZONA	Entrada	    10	0
+Riego		ZONA	Sauce		10	0
+Riego		ZONA	Rosales	    10	0
+Riego		ZONA	Huerto		0	0
+Riego		ZONA	EscaleraUp	10	0
+Riego		ZONA	Escalera	10	0
+Riego		ZONA	Avicondra	2	0
+Riego		ZONA	Hortensias	10	0
+Riego		ZONA	Cesped1	    15	0
+Riego		ZONA	Cesped2	    15	0
+Riego		ZONA	CespedAtr1	15	0
+Riego		ZONA	CespedAtr2	15	0
+Riego		ZONA	Arboles	    10	0
+Riego		ZONA	Frutales	10	0
+Riego		ZONA	Rocaya		10	0
+Riego		PROGACTIVO	trafo
+
+# Salidas Riego
+OUTPUT485 	trafo 		S 12
+OUTPUT485 	Entrada 	S 0
+OUTPUT485 	Sauce		S 1
+OUTPUT485 	Rosales		S 2
+OUTPUT485 	Huerto		S 3
+OUTPUT485 	EscaleraUp	S 4
+OUTPUT485 	Escalera	S 5
+OUTPUT485 	Avicondra	S 6
+OUTPUT485 	Hortensias	S 7
+OUTPUT485 	Cesped1		S 8
+OUTPUT485 	Cesped2		S 9
+OUTPUT485 	CespedAtr1	S 13
+OUTPUT485 	CespedAtr2	S 14
+OUTPUT485 	Arboles		S 15
+OUTPUT485 	Frutales	S 16
+OUTPUT485 	Rocaya		S 17
+
+# Variables de riego
+DISPLAY	trafo Riego RiegoActivado
+
+permisoRiego	MANUALINPUTEEPROM 1 Riego General
+pararRiego		NOT	permisoRiego
+
+
+# ----------------------------------------------------------
+# Luces y sensor garaje ("F")
+OUTPUT485 	FarolaEntrada   F 0
+OUTPUT485 	LuzGar          F 1
+OUTPUT485 	LuzGar          F 2
+notSensorGar   INPUT485 	F 0
+
+sensorGar		NOT notSensorGar
+hayAlguienGar	TEMPORIZADOR	sensorGar 0 2 0 0 1 0
+LuzGar  	    AUTOEEPROM 		hayAlguienGar   2 LuzGaraje	General
+HoyHayAlguien	TEMPORIZADOR	sensorGar 24 0 0 0 1 0
+permisoFarola   AND HoyHayAlguien   esdenoche
+FarolaEntrada	AUTOEEPROM      permisoFarola   2 Farola	General
+
+DISPLAY	LuzGar          Luz LuzGar
+DISPLAY	FarolaEntrada   Luz FarolaEntrada
+DISPLAY	esdenoche       Luz Es_de_noche
+DISPLAY	sensorGar       Luz sensorGar
+DISPLAY	HoyHayAlguien   Luz HoyHayAlguien
+DISPLAY	hayAlguienGar   Luz hayAlguienGar
+
+
+# ----------------------------------------------------------
+# Alarma
+OUTPUT485 	sirenaOn A 0
+nadaInfSalon	INPUT485 	A 0
+cerrEntrPorche 	INPUT485 	A 1
+cerrVentEntrada	INPUT485 	A 2
+cerrCocina	    INPUT485 	A 3
+cerrEdurne	    INPUT485 	A 4
+cerrAinhoa	    INPUT485 	A 5
+cerrInvitados   INPUT485 	A 6
+cerrDormPrinc 	INPUT485 	A 7
+sirenaOn	MANUALINPUTEEPROM 0	Sirena	General
+
+todoCerr0 AND nadaInfSalon cerrEntrPorche
+todoCerr1 AND todoCerr0 cerrVentEntrada
+todoCerr2 AND todoCerr1 cerrCocina
+todoCerr3 AND todoCerr1 cerrEdurne
+todoCerr4 AND todoCerr1 cerrAinhoa
+todoCerr5 AND todoCerr1 cerrInvitados
+todoCerrado AND todoCerr1 cerrDormPrinc
+
+DISPLAY	todoCerrado General Todo_Cerrado
+
+DISPLAY sirenaOn Alarma SirEncendida
+DISPLAY	nadaInfSalon Alarma nadaInfSalon
+DISPLAY	cerrEntrPorche Alarma cerrEntrPorche
+DISPLAY	cerrVentEntrada Alarma cerrVentEntrada
+DISPLAY	cerrCocina Alarma cerrCocina
+DISPLAY	cerrEdurne Alarma cerrEdurne
+DISPLAY	cerrAinhoa Alarma cerrAinhoa
+DISPLAY	cerrInvitados Alarma cerrInvitados
+DISPLAY	cerrDormPrinc Alarma cerrDormPrinc
+
+
