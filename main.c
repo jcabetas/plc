@@ -19,6 +19,7 @@
 #include "chprintf.h"
 
 void testMB(void);
+int canTest(void);
 
 /*
  * This is a periodic thread that does absolutely nothing except flashing
@@ -70,7 +71,7 @@ int main(void) {
    * Activates the serial driver 1 using the driver default configuration.
    */
   initSerial1();
-
+  canTest();
 
   /*
    * #define STM32H7_REV_Z 0x1001
@@ -94,6 +95,7 @@ int main(void) {
 
 
   //testMB();
+
   /*
    * Creates the example thread.
    */

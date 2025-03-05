@@ -82,9 +82,31 @@ extern "C"
 //  CAN_BTR_SJW(1) | CAN_BTR_TS2(1) |
 //  CAN_BTR_TS1(10) | CAN_BTR_BRP(5)
 //};
+//static const CANConfig cancfg = {
+//  51U | 10U<<8 | 7U<<16, //  FDCAN_CONFIG_NBTP_NTSEG2(51U) |  FDCAN_CONFIG_NBTP_NTSEG1(10U) |  FDCAN_CONFIG_NBTP_NBRP(7U),      /* NBTP */
+//  3U | 3U<<4 | 10U<<8 | 7U<<16, // FDCAN_CONFIG_DBTP_DSJW(3U) |  FDCAN_CONFIG_DBTP_DTSEG2(3U) |  FDCAN_CONFIG_DBTP_DTSEG1(10U) |  FDCAN_CONFIG_DBTP_DBRP(7U),      /* DBTP */
+//  0,                               /* CCCR */
+//  0,                               /* TEST */
+//  0                                /* GFC */
+//};
+
+/*
+ * Baud 125kbit/s.
+ */
 static const CANConfig cancfg = {
-  51U | 10U<<8 | 7U<<16, //  FDCAN_CONFIG_NBTP_NTSEG2(51U) |  FDCAN_CONFIG_NBTP_NTSEG1(10U) |  FDCAN_CONFIG_NBTP_NBRP(7U),      /* NBTP */
-  3U | 3U<<4 | 10U<<8 | 7U<<16, // FDCAN_CONFIG_DBTP_DSJW(3U) |  FDCAN_CONFIG_DBTP_DTSEG2(3U) |  FDCAN_CONFIG_DBTP_DTSEG1(10U) |  FDCAN_CONFIG_DBTP_DBRP(7U),      /* DBTP */
+#if defined USE_CAN_PROTOCOL
+  OPMODE_CAN,
+#else
+  OPMODE_FDCAN,                    /* OP MODE */
+#endif
+  FDCAN_CONFIG_NBTP_NTSEG2(51U) |
+  FDCAN_CONFIG_NBTP_NTSEG1(10U) |
+  FDCAN_CONFIG_NBTP_NBRP(7U),      /* NBTP */
+  FDCAN_CONFIG_DBTP_DSJW(3U) |
+  FDCAN_CONFIG_DBTP_DTSEG2(3U) |
+  FDCAN_CONFIG_DBTP_DTSEG1(10U) |
+  FDCAN_CONFIG_DBTP_DBRP(7U),      /* DBTP */
+  0,                               /* TDCR */
   0,                               /* CCCR */
   0,                               /* TEST */
   0                                /* GFC */

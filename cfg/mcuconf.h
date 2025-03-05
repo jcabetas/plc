@@ -99,7 +99,7 @@
 #define STM32_PLL1_DIVN_VALUE               384
 #define STM32_PLL1_FRACN_VALUE              0
 #define STM32_PLL1_DIVP_VALUE               2
-#define STM32_PLL1_DIVQ_VALUE               16
+#define STM32_PLL1_DIVQ_VALUE               15
 #define STM32_PLL1_DIVR_VALUE               8
 #define STM32_PLL2_ENABLED                  TRUE
 #define STM32_PLL2_P_ENABLED                TRUE
@@ -153,7 +153,7 @@
 #define STM32_QSPISEL                       STM32_QSPISEL_HCLK
 #define STM32_FMCSEL                        STM32_FMCSEL_HCLK
 #define STM32_SWPSEL                        STM32_SWPSEL_PCLK1
-#define STM32_FDCANSEL                      STM32_FDCANSEL_HSE_CK
+#define STM32_FDCANSEL                      STM32_FDCANSEL_PLL1_Q_CK
 #define STM32_DFSDM1SEL                     STM32_DFSDM1SEL_PCLK2
 #define STM32_SPDIFSEL                      STM32_SPDIFSEL_PLL1_Q_CK
 #define STM32_SPI45SEL                      STM32_SPI45SEL_PCLK2

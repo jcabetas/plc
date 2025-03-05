@@ -95,7 +95,8 @@ MCU  = cortex-m7
 ifeq ($(OS),Windows_NT)
   CHIBIOS = C:\ChibiStudio\ChibiOS2111
 else
-  CHIBIOS  := /home/joaquin/ChibiStudio/chibios_stable-21.11.x
+  #CHIBIOS  := /home/joaquin/ChibiStudio/chibios_stable-21.11.x
+  CHIBIOS  := /home/joaquin/ChibiStudio/ChibiOS-master
 endif
 CONFDIR  := ./cfg
 BUILDDIR := ./build
@@ -131,7 +132,7 @@ LDSCRIPT= $(STARTUPLD)/STM32H743xI.ld
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 CSRC = $(ALLCSRC) \
-       main.c
+       canTest.c main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
