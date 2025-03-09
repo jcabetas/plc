@@ -18,6 +18,9 @@
 #include "hal.h"
 #include "chprintf.h"
 
+
+#include "ccportab.h"
+
 void testMB(void);
 int canTest(void);
 
@@ -52,6 +55,10 @@ void initSerial1(void)
     chprintf((BaseSequentialStream*) &SD1,"Hola SD1\r\n");
 }
 
+void initADC(void);
+int multi(void);
+
+
 /*
  * Application entry point.
  */
@@ -71,7 +78,7 @@ int main(void) {
    * Activates the serial driver 1 using the driver default configuration.
    */
   initSerial1();
-  canTest();
+  //canTest();
 
   /*
    * #define STM32H7_REV_Z 0x1001
@@ -94,7 +101,8 @@ int main(void) {
       chprintf((BaseSequentialStream*) &SD1,".. rev. desconocida\r\n");
 
 
-  //testMB();
+  //initADC();
+  multi();
 
   /*
    * Creates the example thread.

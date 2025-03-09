@@ -14,20 +14,24 @@
 
 #include "ch.hpp"
 #include "hal.h"
+
+#include "ccportab.h"
+
 #include "gets.h"
 #include "string.h"
 #include "nextion.h"
 extern "C" {
     void testCargador(void);
     void adcAWDCallback(void);
+    void initADC(void);
 }
 using namespace chibios_rt;
 
 #include "dispositivos.h"
 
 ///* Algunas definiciones que faltan en Chibios */
-#define ADC_JSQR_JSQ4_N(n)       ((n) << 15)  /**< @brief 1st channel in seq. */
-#define ADC_JSQR_NUM_CH(n)      (((n) - 1) << 20)
+#define ADC_JSQR_JSQ1_N(n)       ((n) << 9)  /**< @brief 1st channel in seq. */
+#define ADC_JSQR_JL_N(n)         ((n) - 1)
 
 #define STM32_ADC_NUMBER         18
 #define STM32_ADC_IRQ_PRIORITY    6
@@ -325,34 +329,216 @@ void adcAWDCallback(void)
 //     if (sr & ADC_SR_AWD) adcAWDCallback();
 
 
-void cargador::initADC(void)
+void initADCCargador(void)
 {
-//    // input en PB0ADC12IN8 ADC12_IN8
-//    palSetLineMode(GPIOC_VPILOT, PAL_MODE_INPUT_ANALOG);
-//
-//    rccEnableADC12(FALSE);
+    // - Tengo que medir Vpilot cuando salida Pilot esta en alto (para ver resistencias), y tambien
+    // cuando esta en estado bajo para comprobar los -12V que debe tener
+
+    // La senyal PWN viene en PA15-TIM2CH1
+    // input en LINE_VPILOT (PC4)   ADC12_INP4
+    // Muestreamos IN4 como regular usando TIM2CH2 y como injected usando TIM3CH4
+
+    // sensor 4-20mA 1 está en PC1 (ADC123_INP11)
+    // sensor 4-20mA 2 está en PC3 (ADC3_INP1)
+
+    palSetLineMode(LINE_VPILOT, PAL_MODE_INPUT_ANALOG);
+    rccEnableADC12(FALSE);
 //    rccEnableDAC1(false);
-//    ADC1->CR = 0;
-//    ADC1->CR = ADC_CR_ADEN;
-//    // TIM1-CH3  (sin salida) Trigger para regular ADC
-//    // TIM1-CH4  (sin salida) Trigger para Injected ADC
+    ADC1->CR = 0;
+    ADC1->CR = ADC_CR_ADEN;
+//    // TIM2-CH2  (sin salida) Trigger para regular ADC
+//    // TIM3-CH4  (sin salida) Trigger para Injected ADC
 //    // ADC1->CR1   = ADC_CR1_SCAN | ADC_CR1_AWDEN | ADC_CR1_AWDIE;
-//    ADC1->IER |= ADC_IER_AWD1IE;
-//    ADC1->CFGR |= ADC_CFGR_JAWD1EN;
-//    ADC1->CR |= ADC_CR_JADSTART;    // empezamos a convertir injected channels
-//
-//
-//    ADC1->CR2 = ADC_CR2_ADON | ADC_CR2_EXTEN_FALLING  | ADC_CR2_EXTSEL_SRC(0b0010) | (0b10<<20) | (0b000<<16); //ADC_CR2_JEXTEN_FALLING + JEXTSEL(TIM1CH4)
-//    ADC1->SMPR1 = 0;//ADC_SMPR1_SMP_AN10(ADC_SAMPLE_144);
-//    ADC1->SMPR2 = ADC_SMPR2_SMP_AN8(ADC_SAMPLE_480);
-//    ADC1->SQR1  = ADC_SQR1_NUM_CH(1);
-//    ADC1->SQR2  = 0;
-//    ADC1->SQR3  = ADC_SQR3_SQ1_N(ADC_CHANNEL_IN8);
-//    ADC1->JSQR = ADC_JSQR_NUM_CH(1) | ADC_JSQR_JSQ4_N(ADC_CHANNEL_IN8);
-//    // Activo Watchdog en todos los canales regulares
-//    ADC1->HTR1 = 5; // para que se active enseguida, pongo un rango estrecho
-//    ADC1->LTR1 = 3;
-//    nvicEnableVector(STM32_ADC_NUMBER, STM32_ADC_IRQ_PRIORITY);
+    ADC1->IER |= ADC_IER_AWD1IE;
+    ADC1->CR |= ADC_CR_JADSTART;    // empezamos a convertir injected channels
+    ADC1->CR |= ADC_CR_ADEN;
+    ADC1->CFGR = ADC_CFGR_JAWD1EN | ADC_CFGR_EXTEN_FALLING  | ADC_CFGR_EXTSEL_SRC(0b0011) | (0b10<<20) | (0b000<<16); //ADC_CR2_JEXTEN_FALLING + JEXTSEL(TIM2OC2)
+    ADC1->SMPR1 = ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5);//ADC_SMPR1_SMP_AN10(ADC_SAMPLE_144);
+    ADC1->SMPR2 = 0;
+    ADC1->SQR1  = ADC_SQR1_NUM_CH(ADC_CHANNEL_IN4);
+    ADC1->SQR2  = 0;
+    ADC1->SQR3  = 0;
+    ADC1->SQR4  = 0;
+    ADC1->JSQR = ADC_JSQR_JL_N(1) | ADC_JSQR_JSQ1_N(ADC_CHANNEL_IN4);
+    // Activo Watchdog en todos los canales regulares
+    ADC1->HTR1 = 5; // para que se active enseguida, pongo un rango estrecho
+    ADC1->LTR1 = 3;
+    nvicEnableVector(STM32_ADC_NUMBER, STM32_ADC_IRQ_PRIORITY);
 //   // estimaValoresADC();
 
 }
+
+
+void initADC(void)
+{
+    // - Tengo que medir Vpilot cuando salida Pilot esta en alto (para ver resistencias), y tambien
+    // cuando esta en estado bajo para comprobar los -12V que debe tener
+    // usa ADCv4 de Chibios
+
+    // La senyal PWN viene en PA15-TIM2CH1
+    // input en LINE_VPILOT (PC4)   ADC12_INP4
+    // Muestreamos IN4 como regular usando TIM2CH2 y como injected p.e. con TIM3_OC4,
+
+    /*
+     * esta complicado, los injected son:
+    adc_jext_trg0   tim1_trgoInternal signal from on-chip timers00000
+    adc_jext_trg1   tim1_oc4Internal signal from on-chip timers00001
+    adc_jext_trg2   tim2_trgoInternal signal from on-chip timers00010
+    adc_jext_trg3   tim2_oc1Internal signal from on-chip timers00011
+    adc_jext_trg4   tim3_oc4Internal signal from on-chip timers00100
+    adc_jext_trg5   tim4_trgoInternal signal from on-chip timers00101
+    adc_jext_trg6   exti15External pin00110
+    adc_jext_trg7   tim8_oc4Internal signal from on-chip timers00111
+    adc_jext_trg8   tim1_trgo2Internal signal from on-chip timers01000
+    adc_jext_trg9   tim8_trgoInternal signal from on-chip timers01001
+    */
+    // probamos sincronización de timers: TIM2 como maestro, y TIM3 como esclavo
+    // TIM3_SMCR_TS = ITR1 (0b0001)  // Triger selection = TIM2
+    //          _SMS = 0111: External Clock Mode 1 - Rising edges of the selected trigger (TRGI) clock the counter.
+    //         _ MS = 1: The effect of an event on the trigger input (TRGI) is delayed to allow a perfect
+    //                   synchronization between the current timer and its slaves (through TRGO). It is useful if we
+    //                   want to synchronize several timers on a single external event.
+    // TIM2_CR2_MMS = 100: Compare - OC1REFC signal is used as trigger output (TRGO)
+
+    palSetLineMode(LINE_VPILOT, PAL_MODE_INPUT_ANALOG);
+    rccEnableADC12(FALSE);
+//    rccEnableDAC1(false);
+    ADC1->CR = 0;
+    ADC1->CR = ADC_CR_ADEN;
+    while (ADC1->ISR & ADC_ISR_ADRDY != 1)
+        chThdSleepMilliseconds(1);
+//    // TIM2-CH2  (sin salida) Trigger para regular ADC
+//    // TIM2-CH3  (sin salida) Trigger para Injected ADC
+//    // ADC1->CR1   = ADC_CR1_SCAN | ADC_CR1_AWDEN | ADC_CR1_AWDIE;
+    ADC1->IER |= ADC_IER_AWD1IE;
+    ADC1->CR |= ADC_CR_JADSTART;    // empezamos a convertir injected channels
+    ADC1->CFGR = ADC_CFGR_JAWD1EN | ADC_CFGR_EXTEN_FALLING  | ADC_CFGR_EXTSEL_SRC(0b0011) | (0b10<<20) | (0b000<<16); //ADC_CR2_JEXTEN_FALLING + JEXTSEL(TIM2OC2)
+    ADC1->SMPR1 = ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5);//ADC_SMPR1_SMP_AN10(ADC_SAMPLE_144);
+    ADC1->SMPR2 = 0;
+    ADC1->SQR1  = ADC_SQR1_NUM_CH(ADC_CHANNEL_IN4);
+    ADC1->SQR2  = 0;
+    ADC1->SQR3  = 0;
+    ADC1->SQR4  = 0;
+    ADC1->PCSEL = ADC_SELMASK_IN4;
+    ADC1->JSQR = ADC_JSQR_JL_N(1) | ADC_JSQR_JSQ1_N(ADC_CHANNEL_IN4) |  ADC_JSQR_JSQ1_N(0b00100); // TIM3OC4
+    // Activo Watchdog en todos los canales regulares
+    ADC1->CR = ADC_CR_ADEN |ADC_CR_ADSTART | ADC_CR_JADSTART;
+
+    uint32_t miCR = ADC1->CR;
+    uint32_t miCFGR = ADC1->CFGR;
+    uint32_t miSMPR = ADC1->SMPR1;
+    uint32_t miJSQR = ADC1->JSQR;
+    uint32_t miISR = ADC1->ISR;
+
+    ADC1->HTR1 = 5; // para que se active enseguida, pongo un rango estrecho
+    ADC1->LTR1 = 3;
+    nvicEnableVector(STM32_ADC_NUMBER, STM32_ADC_IRQ_PRIORITY);
+
+    while (true) {
+        uint32_t valorActual = ADC1->DR;
+      //cacheBufferInvalidate(samples2multi, sizeof (samples2multi) / sizeof (adcsample_t));
+      chThdSleepMilliseconds(500);
+    }
+//   // estimaValoresADC();
+
+}
+
+
+
+
+#define ADC_GRP2_BUF_DEPTH      64
+#define ADC_GRP2_NUM_CHANNELS       2
+#define PORTAB_GPT1                 GPTD4
+#define PORTAB_ADC1                 ADCD1
+
+
+#if CACHE_LINE_SIZE > 0
+CC_ALIGN_DATA(CACHE_LINE_SIZE)
+#endif
+
+
+
+/*
+ * GPT configuration.
+ */
+const GPTConfig portab_gptcfg1 = {
+  .frequency    =  20000U,
+  .callback     =  NULL,
+  .cr2          =  TIM_CR2_MMS_1,   /* MMS = 010 = TRGO on Update Event.    */
+  .dier         =  0U
+};
+
+//
+////const GPTConfig portab_gptcfg1;
+//extern const ADCConversionGroup portab_adcgrpcfg2;
+
+adcsample_t samples2[CACHE_SIZE_ALIGN(adcsample_t, ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH)];
+
+/*
+ * ADC streaming callback.
+ */
+size_t n= 0, nx = 0, ny = 0;
+void adccallback(ADCDriver *adcp) {
+
+  /* Updating counters.*/
+  n++;
+  if (adcIsBufferComplete(adcp)) {
+    nx += 1;
+  }
+  else {
+    ny += 1;
+  }
+
+  if ((n % 200) == 0U) {
+#if defined(PORTAB_LINE_LED2)
+    palToggleLine(PORTAB_LINE_LED2);
+#endif
+  }
+}
+
+
+
+/*
+ * ADC errors callback, should never happen.
+ */
+void adcerrorcallback(ADCDriver *adcp, adcerror_t err) {
+
+  (void)adcp;
+  (void)err;
+
+  chSysHalt("it happened");
+}
+/*
+ * ADC conversion group 2.
+ * Mode:        Continuous, 2 channels, HW triggered by GPT4-TRGO.
+ * Channels:    IN0, IN5.
+ */
+const ADCConversionGroup portab_adcgrpcfg2 = {
+  .circular     = true,
+  .num_channels = ADC_GRP2_NUM_CHANNELS,
+  .end_cb       = adccallback,
+  .error_cb     = adcerrorcallback,
+  .cfgr         = ADC_CFGR_CONT_ENABLED /*| ADC_CFGR_EXTEN_RISING |
+                      ADC_CFGR_EXTSEL_SRC(12)*/,  /* TIM4_TRGO */
+  .cfgr2        = 0U,
+  .ccr          = 0U,
+  .pcsel        = ADC_SELMASK_IN0 | ADC_SELMASK_IN5,
+  .ltr1         = 0x00000000U,
+  .htr1         = 0x03FFFFFFU,
+  .ltr2         = 0x00000000U,
+  .htr2         = 0x03FFFFFFU,
+  .ltr3         = 0x00000000U,
+  .htr3         = 0x03FFFFFFU,
+  .smpr         = {
+   ADC_SMPR1_SMP_AN0(ADC_SMPR_SMP_384P5) |
+   ADC_SMPR1_SMP_AN5(ADC_SMPR_SMP_384P5),
+    0U
+  },
+  .sqr          = {
+    ADC_SQR1_SQ1_N(ADC_CHANNEL_IN0) | ADC_SQR1_SQ2_N(ADC_CHANNEL_IN5),
+    0U,
+    0U,
+    0U
+  }
+};
+

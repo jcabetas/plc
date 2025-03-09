@@ -314,6 +314,8 @@
 #define LINE_SPI3MOSI               PAL_LINE(GPIOD, GPIOD_SPIx_CS)
 #define LINE_SPI3CS                 PAL_LINE(GPIOD, GPIOD_SPIx_MOSI)
 #define LINE_CANSILENT              PAL_LINE(GPIOE, GPIOE_CANSILENT)
+#define LINE_VPILOT                 PAL_LINE(GPIOC, GPIOC_VPILOT)
+#define LINE_TIM2CH1                PAL_LINE(GPIOA, GPIOA_TIM2CH1)
 
 
 /*===========================================================================*/

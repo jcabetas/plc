@@ -90,17 +90,16 @@ extern "C"
 //  0                                /* GFC */
 //};
 
-/*
- * Baud 125kbit/s.
- */
-static const CANConfig cancfg = {
+// MI ALTERNATIVA PARA 500 kB
+// ver http://www.bittiming.can-wiki.info/
+static const CANConfig cancfg500 = {
 #if defined USE_CAN_PROTOCOL
   OPMODE_CAN,
 #else
   OPMODE_FDCAN,                    /* OP MODE */
 #endif
-  FDCAN_CONFIG_NBTP_NTSEG2(51U) |
-  FDCAN_CONFIG_NBTP_NTSEG1(10U) |
+  FDCAN_CONFIG_NBTP_NTSEG2(1U) |
+  FDCAN_CONFIG_NBTP_NTSEG1(12U) |
   FDCAN_CONFIG_NBTP_NBRP(7U),      /* NBTP */
   FDCAN_CONFIG_DBTP_DSJW(3U) |
   FDCAN_CONFIG_DBTP_DTSEG2(3U) |
@@ -111,12 +110,6 @@ static const CANConfig cancfg = {
   0,                               /* TEST */
   0                                /* GFC */
 };
-//// mis calculos 125 kB (APB=42 MHz)
-//static const CANConfig cancfg = {
-//  CAN_MCR_ABOM | CAN_MCR_AWUM | CAN_MCR_TXFP,
-//  CAN_BTR_SJW(1) | CAN_BTR_TS2(1) |
-//  CAN_BTR_TS1(12) | CAN_BTR_BRP(20)
-//};
 
 
 
@@ -398,7 +391,7 @@ int8_t can::init(void)
         initColaMsgTxCan();
         palSetLineMode(LINE_CANSILENT, PAL_MODE_OUTPUT_PUSHPULL);
         palClearLine(LINE_CANSILENT);
-        canStart(&CAND1, &cancfg);
+        canStart(&CAND1, &cancfg500);
         if (!procesoCANRX)
             procesoCANRX = chThdCreateStatic(can_rx_wa, sizeof(can_rx_wa), NORMALPRIO + 7,  can_rx, NULL);
         if (!procesoCANTX)
@@ -478,7 +471,7 @@ void testTxCAN(void)
 //  txmsg.IDE = CAN_IDE_STD;
 //  txmsg.RTR = CAN_RTR_DATA;
   txmsg.DLC = 7;
-  canStart(&CAND1, &cancfg);
+  canStart(&CAND1, &cancfg500);
   valor = 33.0f;
   idMed = 21;
   do
@@ -500,7 +493,7 @@ void testRxCAN(void)
   msg_t result;
   palSetLineMode(LINE_CANSILENT, PAL_MODE_OUTPUT_PUSHPULL);
   palClearLine(LINE_CANSILENT);
-  canStart(&CAND1, &cancfg);
+  canStart(&CAND1, &cancfg500);
   do
   {
       result = canReceive(&CAND1, CAN_ANY_MAILBOX, &rxmsg, TIME_MS2I(1000));

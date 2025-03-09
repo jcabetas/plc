@@ -132,7 +132,7 @@ LDSCRIPT= $(STARTUPLD)/STM32H743xI.ld
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 CSRC = $(ALLCSRC) \
-       canTest.c main.c
+       canTest.c main.c multi/multi.c multi/portab.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -196,7 +196,7 @@ UADEFS =
 
 # List all user directories here
 UINCDIR =  $(CHIBIOS)/os/hal/lib/streams dispositivos satPelayos plc tty w25q16 radio rf95 colas \
-           comunicaciones mqtt nextion vars SMS calendar json
+           comunicaciones mqtt nextion vars SMS calendar json multi
 
 # List the user directory to look for the libraries here
 ULIBDIR =
