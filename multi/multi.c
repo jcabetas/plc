@@ -20,12 +20,16 @@
 
 #include "portab.h"
 
+
+void initTimers(void);
+
+
 /*===========================================================================*/
 /* ADC driver related.                                                       */
 /*===========================================================================*/
 
 #define ADC_GRP1_BUF_DEPTH      1
-#define ADC_GRP2_BUF_DEPTH      64
+#define ADC_GRP2_BUF_DEPTH      8
 
 /* Buffers are allocated with size and address aligned to the cache
    line size.*/
@@ -77,11 +81,14 @@ void adcerrorcallback(ADCDriver *adcp, adcerror_t err) {
 /*===========================================================================*/
 
 
+
 /*
  * Application entry point.
  */
 int multi(void) {
 
+
+//    initTimers();
 
   /* Board-dependent GPIO setup code.*/
   portab_setup();

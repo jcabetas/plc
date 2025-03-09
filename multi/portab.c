@@ -38,7 +38,7 @@
  * GPT configuration.
  */
 const GPTConfig portab_gptcfg1 = {
-  .frequency    =  20000U,
+  .frequency    =  200000U,
   .callback     =  NULL,
   .cr2          =  TIM_CR2_MMS_1,   /* MMS = 010 = TRGO on Update Event.    */
   .dier         =  0U
@@ -99,8 +99,8 @@ const ADCConversionGroup portab_adcgrpcfg2 = {
   .num_channels = ADC_GRP2_NUM_CHANNELS,
   .end_cb       = adccallback,
   .error_cb     = adcerrorcallback,
-  .cfgr         = ADC_CFGR_CONT_ENABLED | ADC_CFGR_RES_12BITS, /*| ADC_CFGR_EXTEN_RISING |
-					  ADC_CFGR_EXTSEL_SRC(12)*/  /* TIM4_TRGO */
+  .cfgr         = ADC_CFGR_RES_12BITS | ADC_CFGR_EXTSEL_SRC(12) | ADC_CFGR_EXTEN_RISING, //| ADC_CFGR_CONT_ENABLED |
+					  //  /* TIM4_TRGO */
   .cfgr2        = 0U,
   .ccr          = 0U,
   .pcsel        = ADC_SELMASK_IN4 | ADC_SELMASK_IN5,
