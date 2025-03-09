@@ -46,7 +46,7 @@ static PWMConfig pwmcfgTIM2 = {
         NULL,
   {
    {PWM_OUTPUT_ACTIVE_HIGH, NULL},
-   {PWM_OUTPUT_DISABLED, NULL},
+   {PWM_OUTPUT_ACTIVE_HIGH, NULL},
    {PWM_OUTPUT_DISABLED, NULL},
    {PWM_OUTPUT_DISABLED, NULL}
   },
@@ -237,13 +237,6 @@ void testCargador(void)
 
     while (true)
      {
-        uint32_t advalor = ADC1->DR;
-        uint32_t adJ = ADC1->JDR1;
-        uint32_t miCR = ADC1->CR;
-        uint32_t miCFGR = ADC1->CFGR;
-        uint32_t miSMPR = ADC1->SMPR1;
-        uint32_t miJSQR = ADC1->JSQR;
-        uint32_t miISR = ADC1->ISR;
          chThdSleepMilliseconds(1000);
      };
 

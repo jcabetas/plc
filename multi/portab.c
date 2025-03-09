@@ -99,13 +99,13 @@ const ADCConversionGroup portab_adcgrpcfg2 = {
   .num_channels = ADC_GRP2_NUM_CHANNELS,
   .end_cb       = adccallback,
   .error_cb     = adcerrorcallback,
-  .cfgr         = ADC_CFGR_RES_12BITS | ADC_CFGR_EXTSEL_SRC(12) | ADC_CFGR_EXTEN_RISING, //| ADC_CFGR_CONT_ENABLED |
-					  //  /* TIM4_TRGO */
+  .cfgr         = ADC_CFGR_RES_12BITS | ADC_CFGR_EXTSEL_SRC(0b11) | ADC_CFGR_EXTEN_RISING ,//| ADC_CFGR_AWD1_N(4) | ADC_CFGR_AWD1EN | ADC_CFGR_AWD1SGL, //| ADC_CFGR_CONT_ENABLED |
+					  // TIM2_OC2 en vez de 12, que es TIM4_TRGO
   .cfgr2        = 0U,
   .ccr          = 0U,
   .pcsel        = ADC_SELMASK_IN4 | ADC_SELMASK_IN5,
-  .ltr1         = 0x00000000U,
-  .htr1         = 0x03FFFFFFU,
+  .ltr1         = 6400, //0x00000000U,
+  .htr1         = 7200, //0x03FFFFFFU,
   .ltr2         = 0x00000000U,
   .htr2         = 0x03FFFFFFU,
   .ltr3         = 0x00000000U,
