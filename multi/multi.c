@@ -124,6 +124,8 @@ int multi(void) {
    */
   adcStartConversion(&ADCD1, &portab_adcgrpcfg2,
                      samples2multi, ADC_GRP2_BUF_DEPTH);
+  ADC1->JSQR |= ADC_CHANNEL_IN4<<ADC_JSQR_JSQ1_Pos | 1<<ADC_JSQR_JL_Pos | 0b00100<<ADC_JSQR_JEXTSEL_Pos | 0b10<<ADC_JSQR_JEXTEN_Pos; // TIM3_oc4, rising, 1 canal
+  ADC1->CR |= ADC_CR_JADSTART;
 
   /*
    * Normal main() thread activity, if the button is pressed then the
@@ -134,6 +136,7 @@ int multi(void) {
       adcStopConversion(&ADCD1);
     }
     cacheBufferInvalidate(samples2multi, sizeof (samples2multi) / sizeof (adcsample_t));
+    uint32_t jdrValor = ADC1->JDR1;
     chThdSleepMilliseconds(500);
   }
   return 0;

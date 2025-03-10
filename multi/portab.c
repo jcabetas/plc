@@ -26,24 +26,6 @@
 
 #include "portab.h"
 
-/*===========================================================================*/
-/* Module local definitions.                                                 */
-/*===========================================================================*/
-
-/*===========================================================================*/
-/* Module exported variables.                                                */
-/*===========================================================================*/
-
-/*
- * GPT configuration.
- */
-const GPTConfig portab_gptcfg1 = {
-  .frequency    =  200000U,
-  .callback     =  NULL,
-  .cr2          =  TIM_CR2_MMS_1,   /* MMS = 010 = TRGO on Update Event.    */
-  .dier         =  0U
-};
-
 const ADCConfig portab_adccfg1 = {
   .difsel       = 0U,
   .calibration  = 0U
@@ -99,7 +81,7 @@ const ADCConversionGroup portab_adcgrpcfg2 = {
   .num_channels = ADC_GRP2_NUM_CHANNELS,
   .end_cb       = adccallback,
   .error_cb     = adcerrorcallback,
-  .cfgr         = ADC_CFGR_RES_12BITS | ADC_CFGR_EXTSEL_SRC(0b11) | ADC_CFGR_EXTEN_RISING | ADC_CFGR_AWD1_N(4) | ADC_CFGR_AWD1EN ,//| ADC_CFGR_AWD1SGL, //| ADC_CFGR_CONT_ENABLED |
+  .cfgr         = ADC_CFGR_RES_12BITS | ADC_CFGR_EXTSEL_SRC(0b11) | ADC_CFGR_EXTEN_FALLING | ADC_CFGR_AWD1_N(4) | ADC_CFGR_AWD1EN ,//| ADC_CFGR_AWD1SGL, //| ADC_CFGR_CONT_ENABLED |
 					  // TIM2_OC2 en vez de 12, que es TIM4_TRGO
   .cfgr2        = 0U,
   .ccr          = 0U,
@@ -122,27 +104,5 @@ const ADCConversionGroup portab_adcgrpcfg2 = {
   }
 };
 
-/*===========================================================================*/
-/* Module local types.                                                       */
-/*===========================================================================*/
-
-/*===========================================================================*/
-/* Module local variables.                                                   */
-/*===========================================================================*/
-
-/*===========================================================================*/
-/* Module local functions.                                                   */
-/*===========================================================================*/
-
-/*===========================================================================*/
-/* Module exported functions.                                                */
-/*===========================================================================*/
-
-void portab_setup(void) {
-
-  /* ADC inputs.*/
-//  palSetPadMode(GPIOA, 0, PAL_MODE_INPUT_ANALOG);
-//  palSetPadMode(GPIOB, 1, PAL_MODE_INPUT_ANALOG);
-}
 
 /** @} */

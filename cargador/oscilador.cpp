@@ -177,8 +177,9 @@ void initTimers(void)
     // PB12 es el rele (GPIOB_RELE, LINE_RELE)
     // PE9TIM1CH1 es el pin de entrada al ondulador
 
-//    palSetLineMode(LINE_TIM2CH1, PAL_MODE_ALTERNATE(1));
-//    palSetPadMode(GPIOB, GPIOB_PIN1, PAL_MODE_ALTERNATE(2));
+    palSetLineMode(LINE_TIM2CH1, PAL_MODE_ALTERNATE(1));
+    palSetPadMode(GPIOB, GPIOB_PIN1, PAL_MODE_ALTERNATE(2));
+    palSetPadMode(GPIOB, GPIOB_SPIx_CLK, PAL_MODE_ALTERNATE(1));
 
     // probamos sincronización de timers: TIM2 como maestro, y TIM3 como esclavo
     // TIM3_SMCR_TS = ITR1 (0b0001)  // Triger selection = TIM2
@@ -188,8 +189,9 @@ void initTimers(void)
     //                   want to synchronize several timers on a single external event.
     // TIM2_CR2_MMS = 100: Compare - OC1REFC signal is used as trigger output (TRGO)
 
+    // TIM2_CH2 esta en PB3
     // TIM3_CH4 lo tenemos en PB1
-    TIM3->SMCR = STM32_TIM3_SMCR_TS(0b0001) | STM32_TIM3_SMCR_SMS(0b0111) | STM32_TIM_SMCR_MSM;
+    TIM3->SMCR = STM32_TIM3_SMCR_TS(0b0001) | STM32_TIM3_SMCR_SMS(0b0111);// | STM32_TIM_SMCR_MSM;
     TIM3->CR2 = STM32_TIM_CR2_MMS(0b100);
 
     pwmStart(&PWMD2, &pwmcfgTIM2);
