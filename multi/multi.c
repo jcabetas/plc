@@ -14,12 +14,15 @@
     limitations under the License.
 */
 
+/*
+ * Modificaciones:
+ * - En hal_adc_lld.c, funcion adc_lld_serve_interrupt, comentar emask para caso de actuacion AWD
+ * - En halconf.h incluir #define  STM32_ADC_ADC12_IRQ_HOOK  if (isr & ADC_ISR_AWD1) adcawd1callback();
+ */
+
 #include "ch.h"
 #include "hal.h"
 #include "ccportab.h"
-
-#include "portab.h"
-
 
 void initTimers(void);
 
@@ -27,9 +30,14 @@ void initTimers(void);
 /*===========================================================================*/
 /* ADC driver related.                                                       */
 /*===========================================================================*/
+extern const ADCConfig portab_adccfg1;
+extern const ADCConversionGroup portab_adcgrpcfg1;
+extern const ADCConversionGroup portab_adcgrpcfg2;
 
 #define ADC_GRP1_BUF_DEPTH      4
 #define ADC_GRP2_BUF_DEPTH      4
+#define ADC_GRP1_NUM_CHANNELS   1
+#define ADC_GRP2_NUM_CHANNELS   1
 
 /* Buffers are allocated with size and address aligned to the cache
    line size.*/
@@ -43,6 +51,7 @@ CC_ALIGN_DATA(CACHE_LINE_SIZE)
 #endif
 adcsample_t samples2multi[CACHE_SIZE_ALIGN(adcsample_t, ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH)];
 
+uint32_t lastAWDvalue = 0U;
 
 /*
  * ADC streaming callback.
@@ -58,10 +67,9 @@ void adccallback(ADCDriver *adcp) {
   else {
     multi_ny += 1;
   }
-
   if ((multi_n % 200) == 0U) {
-#if defined(PORTAB_LINE_LED2)
-    palToggleLine(PORTAB_LINE_LED2);
+#if defined(LINE_LED)
+    palToggleLine(LINE_LED);
 #endif
   }
 }
@@ -73,43 +81,27 @@ void adcerrorcallback(ADCDriver *adcp, adcerror_t err) {
 
   (void)adcp;
   (void)err;
-//  if (err == ADC_ERR_AWD1)
-//  {
-//      //uint32_t dato = ADC1->DR;
-//      ADC1->HTR1 = 0x03FFFFFFU;
-//      ADC1->LTR1 = 0U;
-//      palToggleLine(LINE_RELE1);
-//  }
-  //chSysHalt("it happened");
+  chSysHalt("it happened");
 }
 
 
 /*
- * ADC errors callback, should never happen.
+ * ADC irq callback
  */
-void adcawd1callback(void) {
-      //uint32_t dato = ADC1->DR;
-      ADC1->HTR1 = 0x03FFFFFFU;
-      ADC1->LTR1 = 0U;
-      palToggleLine(LINE_RELE1);
+void adcawd1callback(void)
+{
+  lastAWDvalue = ADC1->DR;
+  ADC1->HTR1 = (ADC1->DR + 100)<<4;
+  ADC1->LTR1 = (ADC1->DR - 100)<<4;
+  palToggleLine(LINE_RELE1);
 }
 
-/*===========================================================================*/
-/* Application code.                                                         */
-/*===========================================================================*/
 
-
-
-/*
- * Application entry point.
- */
 int multi(void) {
 
 
   initTimers();
 
-  /* Board-dependent GPIO setup code.*/
-  portab_setup();
   palSetLineMode(LINE_RELE1, PAL_MODE_OUTPUT_PUSHPULL);
   palClearLine(LINE_RELE1);
   palSetLineMode(LINE_VPILOT, PAL_MODE_INPUT_ANALOG);
@@ -117,9 +109,9 @@ int multi(void) {
    * Starting PORTAB_ADC1 driver and the temperature sensor.
    */
 //  ADC1->CFGR |= ADC_CFGR_AWD1EN;
-  adcStart(&PORTAB_ADC1, &portab_adccfg1);
-  adcSTM32EnableVREF(&PORTAB_ADC1);
-  adcSTM32EnableTS(&PORTAB_ADC1);
+  adcStart(&ADCD1, &portab_adccfg1);
+  adcSTM32EnableVREF(&ADCD1);
+  adcSTM32EnableTS(&ADCD1);
   //ADC1->IER |= ADC_IER_AWD1IE;
 
   /* Performing a one-shot conversion on two channels.*/
@@ -130,7 +122,7 @@ int multi(void) {
    * Starting an ADC continuous conversion triggered with a period of
    * 1/10000 second.
    */
-  adcStartConversion(&PORTAB_ADC1, &portab_adcgrpcfg2,
+  adcStartConversion(&ADCD1, &portab_adcgrpcfg2,
                      samples2multi, ADC_GRP2_BUF_DEPTH);
 
   /*
@@ -138,8 +130,8 @@ int multi(void) {
    * conversion is stopped.
    */
   while (true) {
-    if (palReadLine(PORTAB_LINE_BUTTON) == PORTAB_BUTTON_PRESSED) {
-      adcStopConversion(&PORTAB_ADC1);
+    if (palReadLine(LINE_SW2) == PAL_HIGH) {
+      adcStopConversion(&ADCD1);
     }
     cacheBufferInvalidate(samples2multi, sizeof (samples2multi) / sizeof (adcsample_t));
     chThdSleepMilliseconds(500);

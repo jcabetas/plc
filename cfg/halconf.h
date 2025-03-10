@@ -548,6 +548,9 @@
 #define WSPI_USE_MUTUAL_EXCLUSION           TRUE
 #endif
 
+#define  STM32_ADC_ADC12_IRQ_HOOK  if (isr & ADC_ISR_AWD1) adcawd1callback();
+
+
 #endif /* HALCONF_H */
 
 /** @} */

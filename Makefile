@@ -102,6 +102,8 @@ CONFDIR  := ./cfg
 BUILDDIR := ./build
 DEPDIR   := ./.dep
 
+STM32_ADC_ADC12_IRQ_HOOK := adcirqcallback(uint32_t isr); 
+
 # Licensing files.
 include $(CHIBIOS)/os/license/license.mk
 # Startup files.

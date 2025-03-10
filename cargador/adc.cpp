@@ -405,7 +405,7 @@ void initADC(void)
 //    rccEnableDAC1(false);
     ADC1->CR = 0;
     ADC1->CR = ADC_CR_ADEN;
-    while (ADC1->ISR & ADC_ISR_ADRDY != 1)
+    while ((ADC1->ISR & ADC_ISR_ADRDY) != 1)
         chThdSleepMilliseconds(1);
 //    // TIM2-CH2  (sin salida) Trigger para regular ADC
 //    // TIM2-CH3  (sin salida) Trigger para Injected ADC
@@ -424,18 +424,12 @@ void initADC(void)
     // Activo Watchdog en todos los canales regulares
     ADC1->CR = ADC_CR_ADEN |ADC_CR_ADSTART | ADC_CR_JADSTART;
 
-    uint32_t miCR = ADC1->CR;
-    uint32_t miCFGR = ADC1->CFGR;
-    uint32_t miSMPR = ADC1->SMPR1;
-    uint32_t miJSQR = ADC1->JSQR;
-    uint32_t miISR = ADC1->ISR;
-
     ADC1->HTR1 = 5; // para que se active enseguida, pongo un rango estrecho
     ADC1->LTR1 = 3;
     nvicEnableVector(STM32_ADC_NUMBER, STM32_ADC_IRQ_PRIORITY);
 
     while (true) {
-        uint32_t valorActual = ADC1->DR;
+  //      uint32_t valorActual = ADC1->DR;
       //cacheBufferInvalidate(samples2multi, sizeof (samples2multi) / sizeof (adcsample_t));
       chThdSleepMilliseconds(500);
     }
