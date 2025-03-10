@@ -99,24 +99,23 @@ const ADCConversionGroup portab_adcgrpcfg2 = {
   .num_channels = ADC_GRP2_NUM_CHANNELS,
   .end_cb       = adccallback,
   .error_cb     = adcerrorcallback,
-  .cfgr         = ADC_CFGR_RES_12BITS | ADC_CFGR_EXTSEL_SRC(0b11) | ADC_CFGR_EXTEN_RISING ,//| ADC_CFGR_AWD1_N(4) | ADC_CFGR_AWD1EN | ADC_CFGR_AWD1SGL, //| ADC_CFGR_CONT_ENABLED |
+  .cfgr         = ADC_CFGR_RES_12BITS | ADC_CFGR_EXTSEL_SRC(0b11) | ADC_CFGR_EXTEN_RISING | ADC_CFGR_AWD1_N(4) | ADC_CFGR_AWD1EN ,//| ADC_CFGR_AWD1SGL, //| ADC_CFGR_CONT_ENABLED |
 					  // TIM2_OC2 en vez de 12, que es TIM4_TRGO
   .cfgr2        = 0U,
   .ccr          = 0U,
-  .pcsel        = ADC_SELMASK_IN4 | ADC_SELMASK_IN5,
-  .ltr1         = 6400, //0x00000000U,
-  .htr1         = 7200, //0x03FFFFFFU,
+  .pcsel        = ADC_SELMASK_IN4,
+  .ltr1         = 15000U,            //6400, //0x00000000U,
+  .htr1         = 25000U,  // 7200, //0x03FFFFFFU,
   .ltr2         = 0x00000000U,
   .htr2         = 0x03FFFFFFU,
   .ltr3         = 0x00000000U,
   .htr3         = 0x03FFFFFFU,
   .smpr         = {
-    ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5) |
-    ADC_SMPR1_SMP_AN5(ADC_SMPR_SMP_384P5),
+    ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5),
     0U
   },
   .sqr          = {
-    ADC_SQR1_SQ1_N(ADC_CHANNEL_IN4) | ADC_SQR1_SQ2_N(ADC_CHANNEL_IN5),
+    ADC_SQR1_SQ1_N(ADC_CHANNEL_IN4),
     0U,
     0U,
     0U

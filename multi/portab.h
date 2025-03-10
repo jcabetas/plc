@@ -41,8 +41,8 @@
 #define PORTAB_GPT1                 GPTD4
 #define PORTAB_ADC1                 ADCD1
 
-#define ADC_GRP1_NUM_CHANNELS       2
-#define ADC_GRP2_NUM_CHANNELS       2
+#define ADC_GRP1_NUM_CHANNELS       1
+#define ADC_GRP2_NUM_CHANNELS       1
 
 /*===========================================================================*/
 /* Module pre-compile time settings.                                         */
