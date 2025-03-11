@@ -35,21 +35,12 @@ extern const ADCConversionGroup portab_adcgrpcfg1;
 extern const ADCConversionGroup portab_adcgrpcfg2;
 
 #define ADC_GRP1_BUF_DEPTH      4
-#define ADC_GRP2_BUF_DEPTH      4
 #define ADC_GRP1_NUM_CHANNELS   1
-#define ADC_GRP2_NUM_CHANNELS   1
-
-/* Buffers are allocated with size and address aligned to the cache
-   line size.*/
-#if CACHE_LINE_SIZE > 0
-CC_ALIGN_DATA(CACHE_LINE_SIZE)
-#endif
-adcsample_t samples1[CACHE_SIZE_ALIGN(adcsample_t, ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH)];
 
 #if CACHE_LINE_SIZE > 0
 CC_ALIGN_DATA(CACHE_LINE_SIZE)
 #endif
-adcsample_t samples2multi[CACHE_SIZE_ALIGN(adcsample_t, ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH)];
+adcsample_t samples[CACHE_SIZE_ALIGN(adcsample_t, ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH)];
 
 uint32_t lastAWDvalue = 0U;
 
@@ -96,46 +87,65 @@ void adcawd1callback(void)
   palToggleLine(LINE_RELE1);
 }
 
+const ADCConfig portab_adccfg1 = {
+  .difsel       = 0U,
+  .calibration  = 0U
+};
+
+/*
+ * ADC conversion group.
+ * Mode:        Continuous, 1 channels, HW triggered by GPT4-TRGO.
+ * Channels:    IN4.
+ * 4-20mA 1 => PC1   ADC123_INP11
+ * 4-20mA 2 => PC3_C ADC3_INP1
+ */
+const ADCConversionGroup portab_adcgrpcfg2 = {
+  .circular     = true,
+  .num_channels = ADC_GRP1_NUM_CHANNELS,
+  .end_cb       = adccallback,
+  .error_cb     = adcerrorcallback,
+  .cfgr         = ADC_CFGR_RES_12BITS | ADC_CFGR_EXTSEL_SRC(0b11) | ADC_CFGR_EXTEN_FALLING | ADC_CFGR_AWD1_N(4) | ADC_CFGR_AWD1EN ,//| ADC_CFGR_AWD1SGL, //| ADC_CFGR_CONT_ENABLED |
+                      // TIM2_OC2 en vez de 12, que es TIM4_TRGO
+  .cfgr2        = 0U,
+  .ccr          = 0U,
+  .pcsel        = ADC_SELMASK_IN4 | ADC_SELMASK_IN11,
+  .ltr1         = 15000U,
+  .htr1         = 25000U,
+  .ltr2         = 0x00000000U,
+  .htr2         = 0x03FFFFFFU,
+  .ltr3         = 0x00000000U,
+  .htr3         = 0x03FFFFFFU,
+  .smpr         = {
+    ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5),
+    0U
+  },
+  .sqr          = {
+    ADC_SQR1_SQ1_N(ADC_CHANNEL_IN4),
+    0U,
+    0U,
+    0U
+  }
+};
 
 int multi(void) {
-
 
   initTimers();
 
   palSetLineMode(LINE_RELE1, PAL_MODE_OUTPUT_PUSHPULL);
   palClearLine(LINE_RELE1);
   palSetLineMode(LINE_VPILOT, PAL_MODE_INPUT_ANALOG);
-  /*
-   * Starting PORTAB_ADC1 driver and the temperature sensor.
-   */
-//  ADC1->CFGR |= ADC_CFGR_AWD1EN;
+
   adcStart(&ADCD1, &portab_adccfg1);
   adcSTM32EnableVREF(&ADCD1);
   adcSTM32EnableTS(&ADCD1);
-  //ADC1->IER |= ADC_IER_AWD1IE;
 
-  /* Performing a one-shot conversion on two channels.*/
-//  adcConvert(&PORTAB_ADC1, &portab_adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
-//  cacheBufferInvalidate(samples1, sizeof (samples1) / sizeof (adcsample_t));
-
-  /*
-   * Starting an ADC continuous conversion triggered with a period of
-   * 1/10000 second.
-   */
-  adcStartConversion(&ADCD1, &portab_adcgrpcfg2,
-                     samples2multi, ADC_GRP2_BUF_DEPTH);
+  adcStartConversion(&ADCD1, &portab_adcgrpcfg2, samples, ADC_GRP1_BUF_DEPTH);
+// Arranco injected conversions
   ADC1->JSQR |= ADC_CHANNEL_IN4<<ADC_JSQR_JSQ1_Pos | 1<<ADC_JSQR_JL_Pos | 0b00100<<ADC_JSQR_JEXTSEL_Pos | 0b10<<ADC_JSQR_JEXTEN_Pos; // TIM3_oc4, rising, 1 canal
   ADC1->CR |= ADC_CR_JADSTART;
 
-  /*
-   * Normal main() thread activity, if the button is pressed then the
-   * conversion is stopped.
-   */
   while (true) {
-    if (palReadLine(LINE_SW2) == PAL_HIGH) {
-      adcStopConversion(&ADCD1);
-    }
-    cacheBufferInvalidate(samples2multi, sizeof (samples2multi) / sizeof (adcsample_t));
+    cacheBufferInvalidate(samples, sizeof (samples) / sizeof (adcsample_t));
     uint32_t jdrValor = ADC1->JDR1;
     chThdSleepMilliseconds(500);
   }

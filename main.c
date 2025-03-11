@@ -56,7 +56,7 @@ void initSerial1(void)
 }
 
 void initADC(void);
-int multi(void);
+int multi3(void);
 
 
 /*
@@ -102,7 +102,7 @@ int main(void) {
 
 
   //initADC();
-  multi();
+  multi3();
 
   /*
    * Creates the example thread.

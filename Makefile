@@ -103,6 +103,7 @@ BUILDDIR := ./build
 DEPDIR   := ./.dep
 
 STM32_ADC_ADC12_IRQ_HOOK := adcirqcallback(uint32_t isr); 
+STM32_ADC_ADC3_USE_BDMA := TRUE
 
 # Licensing files.
 include $(CHIBIOS)/os/license/license.mk
@@ -134,7 +135,7 @@ LDSCRIPT= $(STARTUPLD)/STM32H743xI.ld
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 CSRC = $(ALLCSRC) \
-       canTest.c main.c multi/multi.c multi/portab.c
+       canTest.c main.c multi/multi.c multi/multi3.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.

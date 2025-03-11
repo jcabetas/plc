@@ -523,6 +523,8 @@ const ADCConversionGroup portab_adcgrpcfg2 = {
   .htr2         = 0x03FFFFFFU,
   .ltr3         = 0x00000000U,
   .htr3         = 0x03FFFFFFU,
+  .awd2cr       = 0,
+  .awd3cr       = 0,
   .smpr         = {
    ADC_SMPR1_SMP_AN0(ADC_SMPR_SMP_384P5) |
    ADC_SMPR1_SMP_AN5(ADC_SMPR_SMP_384P5),
