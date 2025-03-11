@@ -11,6 +11,7 @@
 extern "C" {
     void testCargador(void);
     void initTimers(void);
+    void initTimersADCs(void);
 }
 using namespace chibios_rt;
 
@@ -35,40 +36,7 @@ void initADC(void);
  * Hasta 51A
  */
 
-/*
- * TIM2 CH1 (PA15) salida PWM Coche
- *      CH2 (sin salida) Trigger para regular ADC
- * TIM3 CH4 (sin salida) Trigger para Injected ADC
- */
-static PWMConfig pwmcfgTIM2 = {
-        8000000,                                 /* 10kHz PWM clock frequency.   */
-        8000,                                    /* Initial PWM 10% width       */
-        NULL,
-  {
-   {PWM_OUTPUT_ACTIVE_HIGH, NULL},
-   {PWM_OUTPUT_ACTIVE_HIGH, NULL},
-   {PWM_OUTPUT_DISABLED, NULL},
-   {PWM_OUTPUT_DISABLED, NULL}
-  },
-  0,
-  0,
-  0
-};
 
-static PWMConfig pwmcfgTIM3 = {
-        8000000,                                 /* 10kHz PWM clock frequency.   */
-        8000,                                    /* Initial PWM 10% width       */
-        NULL,
-  {
-   {PWM_OUTPUT_DISABLED, NULL},
-   {PWM_OUTPUT_DISABLED, NULL},
-   {PWM_OUTPUT_DISABLED, NULL},
-   {PWM_OUTPUT_ACTIVE_HIGH, NULL}
-  },
-  0,
-  0,
-  0
-};
 
 void testCargadorBasico(void)
 {
@@ -140,7 +108,6 @@ int8_t cargador::init(void)
     // PB12 es el rele (GPIOB_RELE, LINE_RELE)
     // PA15-TIM2CH1 LINE_TIM2CH1 es el pin de entrada al ondulador
     // Usamos TIM2CH2 para arrancar regular AD1 y TIM3CH4 para injected
-    initADC();
     palSetLineMode(LINE_RELE1, PAL_MODE_OUTPUT_PUSHPULL);
     palClearLine(LINE_RELE1);
     /*
@@ -148,12 +115,11 @@ int8_t cargador::init(void)
       * LINE_TIM2CH1 is programmed as PWM output (channel 1 of TIM2).
       */
     palSetLineMode(LINE_TIM2CH1, PAL_MODE_ALTERNATE(1));
-    pwmStart(&PWMD2, &pwmcfgTIM2);
+    initTimersADCs();
     fijaAmperios(5.0f);
     ocultaOscilador();
     pwmEnableChannel(&PWMD2, 1,  300); // CH3 4% after start pulse (top side). Ojo, en parada se fija al 5%, necesita margen
     pwmEnableChannel(&PWMD3, 3, 6400); // CH4 80% after start pulse (low side)
-    initADC();
     if (pContratadaValle==NULL)
     {
         nextion::enviaLog(NULL, "Falta bloque CARG-AJUSTES");
@@ -172,74 +138,47 @@ int8_t cargador::init(void)
     return 0;
 }
 
-void initTimers(void)
-{
-    // PB12 es el rele (GPIOB_RELE, LINE_RELE)
-    // PE9TIM1CH1 es el pin de entrada al ondulador
 
-    palSetLineMode(LINE_TIM2CH1, PAL_MODE_ALTERNATE(1));
-    palSetPadMode(GPIOB, GPIOB_PIN1, PAL_MODE_ALTERNATE(2));
-    palSetPadMode(GPIOB, GPIOB_SPIx_CLK, PAL_MODE_ALTERNATE(1));
-
-    // probamos sincronización de timers: TIM2 como maestro, y TIM3 como esclavo
-    // TIM3_SMCR_TS = ITR1 (0b0001)  // Triger selection = TIM2
-    //          _SMS = 0111: External Clock Mode 1 - Rising edges of the selected trigger (TRGI) clock the counter.
-    //          _ MS = 1: The effect of an event on the trigger input (TRGI) is delayed to allow a perfect
-    //                   synchronization between the current timer and its slaves (through TRGO). It is useful if we
-    //                   want to synchronize several timers on a single external event.
-    // TIM2_CR2_MMS = 100: Compare - OC1REFC signal is used as trigger output (TRGO)
-
-    // TIM2_CH2 esta en PB3
-    // TIM3_CH4 lo tenemos en PB1
-    TIM3->SMCR = STM32_TIM3_SMCR_TS(0b0001) | STM32_TIM3_SMCR_SMS(0b0111);// | STM32_TIM_SMCR_MSM;
-    TIM3->CR2 = STM32_TIM_CR2_MMS(0b100);
-
-    pwmStart(&PWMD2, &pwmcfgTIM2);
-    pwmStart(&PWMD3, &pwmcfgTIM3);
-    pwmEnableChannel(&PWMD2, 0, 1300); // Onda para wallbox
-    pwmEnableChannel(&PWMD2, 1,  300); // CH3 4% after start pulse (top side). Ojo, en parada se fija al 5%, necesita margen
-    pwmEnableChannel(&PWMD3, 3, 6400); // CH4 80% after start pulse (low side)
-}
-
-void testCargador(void)
-{
-    // PB12 es el rele (GPIOB_RELE, LINE_RELE)
-    // PE9TIM1CH1 es el pin de entrada al ondulador
-    // Pruebo rele
-    palSetLineMode(LINE_RELE1, PAL_MODE_OUTPUT_PUSHPULL);
-    palClearLine(LINE_RELE1);
-    chThdSleepMilliseconds(2000);
-    palSetLine(LINE_RELE1);
-    chThdSleepMilliseconds(2000);
-    palClearLine(LINE_RELE1);
-
-
-    palSetLineMode(LINE_TIM2CH1, PAL_MODE_ALTERNATE(1));
-    palSetPadMode(GPIOB, GPIOB_PIN1, PAL_MODE_ALTERNATE(2));
-
-    // probamos sincronización de timers: TIM2 como maestro, y TIM3 como esclavo
-    // TIM3_SMCR_TS = ITR1 (0b0001)  // Triger selection = TIM2
-    //          _SMS = 0111: External Clock Mode 1 - Rising edges of the selected trigger (TRGI) clock the counter.
-    //          _ MS = 1: The effect of an event on the trigger input (TRGI) is delayed to allow a perfect
-    //                   synchronization between the current timer and its slaves (through TRGO). It is useful if we
-    //                   want to synchronize several timers on a single external event.
-    // TIM2_CR2_MMS = 100: Compare - OC1REFC signal is used as trigger output (TRGO)
-
-    // TIM3_CH4 lo tenemos en PB1
-    TIM3->SMCR = STM32_TIM3_SMCR_TS(0b0001) | STM32_TIM3_SMCR_SMS(0b0111) | STM32_TIM_SMCR_MSM;
-    TIM3->CR2 = STM32_TIM_CR2_MMS(0b100);
-
-    pwmStart(&PWMD2, &pwmcfgTIM2);
-    pwmStart(&PWMD3, &pwmcfgTIM3);
-    pwmEnableChannel(&PWMD2, 0, 1300); // Onda para wallbox
-    pwmEnableChannel(&PWMD2, 1,  300); // CH3 4% after start pulse (top side). Ojo, en parada se fija al 5%, necesita margen
-    pwmEnableChannel(&PWMD3, 3, 6400); // CH4 80% after start pulse (low side)
-
-    initADC();
-
-    while (true)
-     {
-         chThdSleepMilliseconds(1000);
-     };
-
-}
+//
+//void testCargador(void)
+//{
+//    // PB12 es el rele (GPIOB_RELE, LINE_RELE)
+//    // PE9TIM1CH1 es el pin de entrada al ondulador
+//    // Pruebo rele
+//    palSetLineMode(LINE_RELE1, PAL_MODE_OUTPUT_PUSHPULL);
+//    palClearLine(LINE_RELE1);
+//    chThdSleepMilliseconds(2000);
+//    palSetLine(LINE_RELE1);
+//    chThdSleepMilliseconds(2000);
+//    palClearLine(LINE_RELE1);
+//
+//
+//    palSetLineMode(LINE_TIM2CH1, PAL_MODE_ALTERNATE(1));
+//    palSetPadMode(GPIOB, GPIOB_PIN1, PAL_MODE_ALTERNATE(2));
+//
+//    // probamos sincronización de timers: TIM2 como maestro, y TIM3 como esclavo
+//    // TIM3_SMCR_TS = ITR1 (0b0001)  // Triger selection = TIM2
+//    //          _SMS = 0111: External Clock Mode 1 - Rising edges of the selected trigger (TRGI) clock the counter.
+//    //          _ MS = 1: The effect of an event on the trigger input (TRGI) is delayed to allow a perfect
+//    //                   synchronization between the current timer and its slaves (through TRGO). It is useful if we
+//    //                   want to synchronize several timers on a single external event.
+//    // TIM2_CR2_MMS = 100: Compare - OC1REFC signal is used as trigger output (TRGO)
+//
+//    // TIM3_CH4 lo tenemos en PB1
+//    TIM3->SMCR = STM32_TIM3_SMCR_TS(0b0001) | STM32_TIM3_SMCR_SMS(0b0111) | STM32_TIM_SMCR_MSM;
+//    TIM3->CR2 = STM32_TIM_CR2_MMS(0b100);
+//
+//    pwmStart(&PWMD2, &pwmcfgTIM2);
+//    pwmStart(&PWMD3, &pwmcfgTIM3);
+//    pwmEnableChannel(&PWMD2, 0, 1300); // Onda para wallbox
+//    pwmEnableChannel(&PWMD2, 1,  300); // CH3 4% after start pulse (top side). Ojo, en parada se fija al 5%, necesita margen
+//    pwmEnableChannel(&PWMD3, 3, 6400); // CH4 80% after start pulse (low side)
+//
+//    initADC();
+//
+//    while (true)
+//     {
+//         chThdSleepMilliseconds(1000);
+//     };
+//
+//}

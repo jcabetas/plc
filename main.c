@@ -23,6 +23,8 @@
 
 void testMB(void);
 int canTest(void);
+void testADC(void);
+
 
 /*
  * This is a periodic thread that does absolutely nothing except flashing
@@ -55,8 +57,6 @@ void initSerial1(void)
     chprintf((BaseSequentialStream*) &SD1,"Hola SD1\r\n");
 }
 
-void initADC(void);
-int multi3(void);
 
 
 /*
@@ -101,8 +101,7 @@ int main(void) {
       chprintf((BaseSequentialStream*) &SD1,".. rev. desconocida\r\n");
 
 
-  //initADC();
-  multi3();
+  testADC();
 
   /*
    * Creates the example thread.
@@ -114,9 +113,6 @@ int main(void) {
    * sleeping in a loop and check the button state.
    */
   while (1) {
-    if (palReadLine(LINE_SW2)) {
-
-    }
     chThdSleepMilliseconds(500);
   }
 }

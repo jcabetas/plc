@@ -135,7 +135,7 @@ LDSCRIPT= $(STARTUPLD)/STM32H743xI.ld
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 CSRC = $(ALLCSRC) \
-       canTest.c main.c multi/multi.c multi/multi3.c
+       canTest.c main.c adc/adc1.c adc/adc3.c adc/timerADC.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.

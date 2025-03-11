@@ -452,15 +452,15 @@ CC_ALIGN_DATA(CACHE_LINE_SIZE)
 
 
 
-/*
- * GPT configuration.
- */
-const GPTConfig portab_gptcfg1 = {
-  .frequency    =  20000U,
-  .callback     =  NULL,
-  .cr2          =  TIM_CR2_MMS_1,   /* MMS = 010 = TRGO on Update Event.    */
-  .dier         =  0U
-};
+///*
+// * GPT configuration.
+// */
+//const GPTConfig portab_gptcfg1 = {
+//  .frequency    =  20000U,
+//  .callback     =  NULL,
+//  .cr2          =  TIM_CR2_MMS_1,   /* MMS = 010 = TRGO on Update Event.    */
+//  .dier         =  0U
+//};
 
 //
 ////const GPTConfig portab_gptcfg1;
