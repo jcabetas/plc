@@ -17,6 +17,25 @@
 
 using namespace chibios_rt;
 
+extern "C"
+{
+    void testRf95(void);
+    void initRF95(void);
+}
+
+uint8_t test_spiWrite(uint8_t reg, uint8_t val);
+uint8_t test_spiRead(uint8_t reg);
+
+
+/*
+ * SPI error callback, only used by SPI driver v2.
+ */
+void spi_error_cb(SPIDriver *spip) {
+
+  (void)spip;
+
+  chSysHalt("SPI error");
+}
 
 /*
  * Las entradas usadas son
@@ -34,16 +53,30 @@ using namespace chibios_rt;
  */
 //  SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
 //SPI_CR1_BR_0 | SPI_CR1_BR_1,
-static const SPIConfig spicfg = {
-  false,
-  false,
-  NULL,
-  NULL,
-  GPIOD,
-  GPIOD_NSS,
-  SPI_CFG1_MBR_DIV8 | SPI_CFG1_DSIZE_VALUE(7),  // antes SPI_CR1_BR_0 | SPI_CR1_BR_1,
-  0
+static const SPIConfig hs_spicfg = {
+    .circular         = false,
+    .data_cb          = NULL,
+    .error_cb         = spi_error_cb,
+    .ssport           = GPIOD,
+    .sspad            = GPIOD_NSS,
+    .cfg1             = SPI_CFG1_MBR_DIV128 | SPI_CFG1_DSIZE_VALUE(7),
+    .cfg2             = 0 //SPI_CFG2_MASTER//0U
 };
+
+
+
+//const SPIConfig hs_spicfg = {
+//  .circular         = false,
+//
+//  .data_cb          = NULL,
+//  .error_cb         = NULL, //spi_error_cb,
+//  .ssport           = GPIOD,
+//  .sspad            = GPIOD_NSS,
+//  .cfg1             = SPI_CFG1_MBR_DIV8 | SPI_CFG1_DSIZE_VALUE(7),
+//  .cfg2             = 0U
+//};
+
+
 
 extern event_source_t rf95int_event;
 extern event_source_t newMsgRx_source;
@@ -52,7 +85,7 @@ extern uint8_t _buf[RH_RF95_MAX_PAYLOAD_LEN];
 extern volatile int16_t _lastRssi;
 extern volatile uint8_t _bufLen;
 
-extern uint8_t checkRf95int;
+uint8_t checkRf95int;
 
 extern event_source_t newMsgRx_source;
 extern event_source_t newMsgTx_source;
@@ -118,35 +151,37 @@ static THD_FUNCTION(rf95int, p) {
 }
 
 
+/*
+ * Las entradas usadas son
+ * PC6 (LINE_LORA_DIO): INT
+ * PD15 (LINE_LORANSS): NSS
+ * PB12 (LINE_LORARESET): RESET
+ * PB13 (LINE_LORASCK2): SCK
+ * PB14 (LINE_LORAMISO2): MISO
+ * PB15 (LINE_LORAMOSI2): MOSI
+ */
 
 void initRF95(void)
 {
     chEvtObjectInit(&rf95int_event);
-    // defino los pines
-    /*
-     * Las entradas usadas son
-     * PF2: INT
-     * PF5: CS
-     * PE2: RESET
-     * PF7: SPI5SCK
-     * PF8: SPI5MISO
-     * PF9: SPI5MOSI
-     */
-    palClearLine(LINE_LORARESET);
-    palSetLineMode(LINE_LORARESET, PAL_MODE_OUTPUT_PUSHPULL);
-    palSetLineMode(LINE_LORANSS, PAL_MODE_OUTPUT_PUSHPULL);
-    palClearLine(LINE_LORARESET);
-    chThdSleepMilliseconds(2);
-    palSetLineMode(LINE_LORARESET, PAL_MODE_INPUT);
-
-    palEnableLineEvent(LINE_LORA_DIO, PAL_EVENT_MODE_RISING_EDGE);
-    palSetLineCallback(LINE_LORA_DIO, f2_cb, NULL);
-
-    spiStart(&SPID2, &spicfg);
-
     chEvtObjectInit(&newMsgRx_source);
     chEvtObjectInit(&newMsgTx_source);
+    palSetLineMode(LINE_LORASCK2, PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
+    palSetLineMode(LINE_LORAMISO2, PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
+    palSetLineMode(LINE_LORAMOSI2, PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
+    palClearLine(LINE_LORARESET);
+    palClearPad(GPIOD,GPIOD_NSS);
+    palSetPadMode(GPIOD,GPIOD_NSS, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);
 
+    palClearLine(LINE_LORARESET);
+    palSetLineMode(LINE_LORARESET, PAL_MODE_OUTPUT_PUSHPULL | PAL_STM32_OSPEED_HIGHEST);
+    chThdSleepMilliseconds(2);
+    palSetLineMode(LINE_LORARESET, PAL_MODE_INPUT); // hay que dejar reset flotando durante power on
+
+    osalThreadSleepMilliseconds(10); // 10 ms para inicialización
+    palEnableLineEvent(LINE_LORA_DIO, PAL_EVENT_MODE_RISING_EDGE);
+    palSetLineCallback(LINE_LORA_DIO, f2_cb, NULL);
+    spiStart(&SPID2, &hs_spicfg);
 
     if (!procesoRf95Int)
         procesoRf95Int = chThdCreateStatic(rf95int_wa, sizeof(rf95int_wa), NORMALPRIO + 7,  rf95int, NULL);
@@ -154,12 +189,7 @@ void initRF95(void)
     if (!RH_RF95_init())
     {
         nextion::enviaLog(NULL,"RF95init failed!!");
-        //ponEnLCD(0,"RF95init failed!!");
-        //osalThreadSleepMilliseconds(2000);
     }
     RH_RF95_setFrequency(434.0f);
     RH_RF95_setModeRx();
 }
-
-
-

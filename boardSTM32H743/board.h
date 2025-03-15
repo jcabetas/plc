@@ -310,6 +310,9 @@
 #define LINE_SENSOR1                PAL_LINE(GPIOD, GPIOD_SENSOR1)
 #define LINE_SENSOR2                PAL_LINE(GPIOD, GPIOD_SENSOR2)
 #define LINE_LORANSS                PAL_LINE(GPIOD, GPIOD_NSS)
+#define LINE_LORASCK2               PAL_LINE(GPIOB, GPIOB_SCK2)
+#define LINE_LORAMISO2              PAL_LINE(GPIOB, GPIOB_MISO2)
+#define LINE_LORAMOSI2              PAL_LINE(GPIOB, GPIOB_MOSI2)
 #define LINE_LORARESET              PAL_LINE(GPIOB, GPIOB_RST_RFM)
 #define LINE_SPI3SCK                PAL_LINE(GPIOB, GPIOB_SPIx_CLK)
 #define LINE_SPI3MISO               PAL_LINE(GPIOB, GPIOB_SPIX_MISO)
@@ -369,8 +372,8 @@
  * PA6  - GPIOA_MISO1               (alternate 5).
  * PA7  - GPIOA_MOSI1               (alternate 5).
  * PA8  - GPIOA_RCC_MCO_1           (input pullup).
- * PA9  - GPIOA_TX1                 (alternate 5).
- * PA10 - GPIOA_RX1                 (alternate 5).
+ * PA9  - GPIOA_TX1                 (alternate 7).
+ * PA10 - GPIOA_RX1                 (alternate 7).
  * PA11 - GPIOA_USB1_DN             (alternate 10).
  * PA12 - GPIOA_USB1_DP             (alternate 10).
  * PA13 - GPIOA_SwDIO               (alternate 0).
@@ -466,8 +469,8 @@
                                      PIN_AFIO_AF(GPIOA_MISO1, 5U) |          \
                                      PIN_AFIO_AF(GPIOA_MOSI1, 5U))
 #define VAL_GPIOA_AFRH              (PIN_AFIO_AF(GPIOA_RCC_MCO_1, 0U) |      \
-                                     PIN_AFIO_AF(GPIOA_TX1, 5U) |      \
-                                     PIN_AFIO_AF(GPIOA_RX1, 5U) |       \
+                                     PIN_AFIO_AF(GPIOA_TX1, 7U) |      \
+                                     PIN_AFIO_AF(GPIOA_RX1, 7U) |       \
                                      PIN_AFIO_AF(GPIOA_USB1_DN, 10U) |       \
                                      PIN_AFIO_AF(GPIOA_USB1_DP, 10U) |       \
                                      PIN_AFIO_AF(GPIOA_SWDIO, 0U) |         \

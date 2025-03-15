@@ -85,8 +85,13 @@ volatile bool       _cad;
 /// Channel activity timeout in ms
 volatile unsigned int        _cad_timeout;
 
-static uint8_t txbuf[SPI_BUFFERS_SIZE];
-static uint8_t rxbuf[SPI_BUFFERS_SIZE];
+//static uint8_t txbuf[SPI_BUFFERS_SIZE];
+//static uint8_t rxbuf[SPI_BUFFERS_SIZE];
+
+CC_ALIGN_DATA(32) static uint8_t txbuf[SPI_BUFFERS_SIZE];
+CC_ALIGN_DATA(32) static uint8_t rxbuf[SPI_BUFFERS_SIZE];
+//CC_ALIGN_DATA(32) static uint8_t txbuf[512];
+//CC_ALIGN_DATA(32) static uint8_t rxbuf[512];
 
 // Interrupt vectors for the 3 Arduino interrupt pins
 // Each interrupt can be handled by a different instance of RH_RF95, allowing you to have
@@ -107,32 +112,72 @@ static const uint8_t MODEM_CONFIG_TABLE[4][3] =
 };
 
 
+
+///*
+// * SPI TX and RX buffers.
+// */
+//CC_ALIGN_DATA(32) static uint8_t txbftest[512];
+//CC_ALIGN_DATA(32) static uint8_t rxbftest[512];
+//
+//
+//// escribe un registro
+//uint8_t test_spiWrite(uint8_t reg, uint8_t val)
+//{
+//    spiAcquireBus(&SPID2);
+//    txbftest[0] = reg | RH_SPI_WRITE_MASK;
+//    txbftest[1] = val;
+//    spiSelect(&SPID2);
+//    spiExchange(&SPID2, 2, txbftest, rxbftest);
+//    spiUnselect(&SPID2);
+//    cacheBufferInvalidate(&rxbftest[0],sizeof rxbftest);/* cache invalidation buffer. */
+//    spiReleaseBus(&SPID2);
+//    return TRUE;
+//}
+//
+//
+//// lee valor de un registro
+//uint8_t test_spiRead(uint8_t reg)
+//{
+//    spiAcquireBus(&SPID2);
+//    txbftest[0] = reg & ~RH_SPI_WRITE_MASK;
+//    spiSelect(&SPID2);
+//    spiExchange(&SPID2, 2, txbftest, rxbftest);
+//    spiUnselect(&SPID2);
+//    cacheBufferInvalidate(&rxbftest[0],sizeof rxbftest);/* cache invalidation buffer. */
+//    spiReleaseBus(&SPID2);
+//    return rxbftest[1];
+//}
+
+
+
 // lee valor de un registro
 uint8_t RHSPIDriver_spiRead(uint8_t reg)
 {
-	uint8_t txbf[2], rxbf[2];
 	spiAcquireBus(&SPID2);
-	txbf[0] = reg & ~RH_SPI_WRITE_MASK;
+	txbuf[0] = reg & ~RH_SPI_WRITE_MASK;
 	spiSelect(&RFSPI);
-	spiExchange(&RFSPI, 2, txbf, rxbf);
+	spiExchange(&RFSPI, 2, txbuf, rxbuf);
 	spiUnselect(&RFSPI);
+    cacheBufferInvalidate(&rxbuf[0],sizeof rxbuf);/* cache invalidation buffer. */
 	spiReleaseBus(&RFSPI);
-	return rxbf[1];
+ 	return rxbuf[1];
 }
+
+
 
 // escribe un registro
 uint8_t RHSPIDriver_spiWrite(uint8_t reg, uint8_t val)
 {
-	uint8_t txbf[2], rxbf[2];
 	spiAcquireBus(&RFSPI);
-	txbf[0] = reg | RH_SPI_WRITE_MASK;
-	txbf[1] = val;
+	txbuf[0] = reg | RH_SPI_WRITE_MASK;
+	txbuf[1] = val;
 	spiSelect(&RFSPI);
-	spiExchange(&RFSPI, 2, txbf, rxbf);
+	spiExchange(&RFSPI, 2, txbuf, rxbuf);
 	spiUnselect(&RFSPI);
 	spiReleaseBus(&RFSPI);
 	return TRUE;
 }
+
 
 uint8_t RHSPIDriver_spiBurstRead(uint8_t reg, uint8_t* dest, uint8_t len)
 {
@@ -142,6 +187,7 @@ uint8_t RHSPIDriver_spiBurstRead(uint8_t reg, uint8_t* dest, uint8_t len)
 	spiExchange(&RFSPI, 1, txbuf, rxbuf);
 	spiExchange(&RFSPI, len, txbuf, dest);
 	spiUnselect(&RFSPI);
+    cacheBufferInvalidate(&rxbuf[0],sizeof rxbuf);/* cache invalidation buffer. */
 	spiReleaseBus(&RFSPI);
 	return TRUE;
 }

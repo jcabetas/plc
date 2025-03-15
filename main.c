@@ -24,7 +24,7 @@
 void testMB(void);
 int canTest(void);
 void testADC(void);
-
+void initRF95(void);
 
 /*
  * This is a periodic thread that does absolutely nothing except flashing
@@ -58,6 +58,32 @@ void initSerial1(void)
 }
 
 
+/*
+ * Find silicon revision
+ * #define STM32H7_REV_Z 0x1001
+ * #define STM32H7_REV_Y 0x1003
+ * #define STM32H7_REV_X 0x2001
+ * #define STM32H7_REV_V 0x2003
+ */
+uint16_t revisionSilicon(void)
+{
+  uint32_t code = DBGMCU->IDCODE; //0x20036450
+  uint16_t revCode = code >>16;
+  chprintf((BaseSequentialStream*) &SD1,"revCode:%4X",revCode);
+  if (revCode == 0x1001)
+      chprintf((BaseSequentialStream*) &SD1,".. es RevZ\r\n");
+  else if (revCode == 0x1003)
+      chprintf((BaseSequentialStream*) &SD1,".. es RevY\r\n");
+  else if (revCode == 0x2001)
+      chprintf((BaseSequentialStream*) &SD1,".. es RevX\r\n");
+  else if (revCode == 0x2003)
+      chprintf((BaseSequentialStream*) &SD1,".. es RevV\r\n");
+  else
+      chprintf((BaseSequentialStream*) &SD1,".. rev. desconocida\r\n");
+  return revCode;
+}
+
+
 
 /*
  * Application entry point.
@@ -79,30 +105,11 @@ int main(void) {
    */
   initSerial1();
   //canTest();
-
-  /*
-   * #define STM32H7_REV_Z 0x1001
-   * #define STM32H7_REV_Y 0x1003
-   * #define STM32H7_REV_X 0x2001
-   * #define STM32H7_REV_V 0x2003
-   */
-  uint32_t code = DBGMCU->IDCODE; //0x20036450
-  uint16_t revCode = code >>16;
-  chprintf((BaseSequentialStream*) &SD1,"revCode:%4X",revCode);
-  if (revCode == 0x1001)
-      chprintf((BaseSequentialStream*) &SD1,".. es RevZ\r\n");
-  else if (revCode == 0x1003)
-      chprintf((BaseSequentialStream*) &SD1,".. es RevY\r\n");
-  else if (revCode == 0x2001)
-      chprintf((BaseSequentialStream*) &SD1,".. es RevX\r\n");
-  else if (revCode == 0x2003)
-      chprintf((BaseSequentialStream*) &SD1,".. es RevV\r\n");
-  else
-      chprintf((BaseSequentialStream*) &SD1,".. rev. desconocida\r\n");
+  //  testADC();
 
 
-  testADC();
-
+  initRF95();
+  //testRf95();
   /*
    * Creates the example thread.
    */
